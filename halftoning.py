@@ -25,11 +25,8 @@ def radius_table(pitch, depth):
 	r = 2 / pitch
 	while color < depth - 1:
 		while f(r) < occupancy:
-			r += 0.00000001
-		#yield r
-		error = f(r) - occupancy
-		yield error
-		print(f"error = {error}\n")
+			r += 0.0000001
+		yield r
 		color += 1
 		occupancy = color / (depth - 1)
 	yield sqrt(2) / 2 * pitch
