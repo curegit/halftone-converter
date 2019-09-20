@@ -1,5 +1,6 @@
-import argparse as arg
-from math import sqrt, sin, acos, pi
+from argparse import ArgumentParser
+from math import sqrt, sin, cos, acos, pi
+from PIL import Image, ImageFilter, ImageCms
 
 def make_occupancy(pitch):
 	def occupancy(radius):
@@ -41,6 +42,35 @@ def make_radius(pitch, depth):
 		else:
 			return table[occupancy]
 	return radius
+
+def make_transforms(pitch, angle):
+	theta = angle / 180 * pi
+	def transform(x, y):
+		u = (x * cos(theta) - y * sin(theta)) / pitch
+		v = (x * sin(theta) + y * cos(theta)) / pitch
+		return (u, v)
+	def inverse_transform(u, v):
+		x = (u * cos(theta) + v * sin(theta)) * pitch
+		y = (v * cos(theta) - u * sin(theta)) * pitch
+		return (x, y)
+	return (transform, inverse_transform)
+
+def halftone_dots(image, pitch, angle):
+	f, g = make_transforms(pitch, angle)
+	x_bounds = (-pitch / 2, image.width + pitch / 2)
+	y_bounds = (-pitch / 2, image.height + pitch / 2)
+	u1 = min()
+	u2 = max()
+
+	uv_bounds = map(image.width, image.width)
+
+
+
+def halftone_image(image, pitch, angle, scale)
+	dots = halftone_dots(image, pitch, angle)
+	width
+	height
+	for x, y,
 
 '''
 # コマンドライン引数をパース
