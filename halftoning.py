@@ -1,6 +1,15 @@
+from sys import float_info
 from argparse import ArgumentParser
 from math import sqrt, sin, cos, acos, pi
 from PIL import Image, ImageFilter, ImageCms
+from cairo import ImageSurface, Context, FORMAT_ARGB32, OPERATOR_SOURCE
+
+def newton(f, df, x0, eps=float_info.epsilon):
+	while True:
+		x1 = x0 - f(x0) / df(x0)
+		if abs(x0 - x1) < eps:
+			return x1
+		x0 = x1
 
 def make_occupancy(pitch):
 	def occupancy(radius):
@@ -25,8 +34,9 @@ def radius_table(pitch, depth):
 		occupancy = color / (depth - 1)
 	r = 2 / pitch
 	while color < depth - 1:
-		while f(r) < occupancy:
-			r += 0.0000001
+		y = lambda x: f(x) - occupancy
+		dy = lambda x: 2 * x / pitch ** 2 * (pi - 4 * acos(pitch / (2 * x)))
+		r = newton(y, dy, r)
 		yield r
 		color += 1
 		occupancy = color / (depth - 1)
