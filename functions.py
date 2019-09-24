@@ -17,30 +17,34 @@ def make_occupancy(pitch):
 			return 1.0
 	return occupancy
 
-def newton(f, df, x0, eps):
+def bisection(f, x1, x2, eps):
 	while True:
-		x1 = x0 - f(x0) / df(x0)
-		if abs(x0 - x1) < eps:
-			return x1
-		x0 = x1
+		x = (x1 + x2) / 2
+		y = f(x)
+		if abs(y) < eps:
+			return x
+		if f(x1) * y > 0:
+			x1 = x
+		else:
+			x2 = x
 
 def radius_table(pitch, depth):
 	color = 0
 	occupancy = 0.0
-	f = make_occupancy(pitch)
 	while occupancy <= pi / 4:
 		yield pitch * sqrt(occupancy / pi)
 		color += 1
 		occupancy = color / (depth - 1)
-	r = 2 / pitch
+	r = pitch / 2
+	rmax = sqrt(2) / 2 * pitch
 	while color < depth - 1:
+		f = make_occupancy(pitch)
 		y = lambda x: f(x) - occupancy
-		dy = lambda x: 2 * x / pitch ** 2 * (pi - 4 * acos(pitch / (2 * x))) if x > pitch / 2 else 1
-		r = newton(y, dy, r, float_info.epsilon * 4)
+		r = bisection(y, r, rmax, float_info.epsilon * 2)
 		yield r
 		color += 1
 		occupancy = color / (depth - 1)
-	yield sqrt(2) / 2 * pitch
+	yield rmax
 
 def make_radius(pitch, depth):
 	table = list(radius_table(pitch, depth))
