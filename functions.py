@@ -115,7 +115,7 @@ def halftone_image(image, pitch, angle, scale):
 		context.fill()
 	return Image.frombuffer("RGBA", (width, height), surface.get_data(), "raw", "RGBA", 0, 1).getchannel("G")
 
-def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0):
+def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1):
 	c, m, y, k = image.split()
 	cyan = halftone_image(c, pitch, angles[0], scale)
 	magenta = halftone_image(m, pitch, angles[1], scale)
