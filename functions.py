@@ -93,8 +93,8 @@ def halftone_dots(image, pitch, angle, depth):
 
 def halftone_image(image, pitch, angle, scale):
 	depth = 256
-	width = image.width * scale
-	height = image.height * scale
+	width = round(image.width * scale)
+	height = round(image.height * scale)
 	foreground = (1.0, 1.0, 1.0, 1.0)
 	background = (0.0, 0.0, 0.0, 1.0)
 	radius = make_radius(pitch, depth)
@@ -115,7 +115,7 @@ def halftone_image(image, pitch, angle, scale):
 		context.fill()
 	return Image.frombuffer("RGBA", (width, height), surface.get_data(), "raw", "RGBA", 0, 1).getchannel("G")
 
-def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1):
+def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0):
 	c, m, y, k = image.split()
 	cyan = halftone_image(c, pitch, angles[0], scale)
 	magenta = halftone_image(m, pitch, angles[1], scale)
