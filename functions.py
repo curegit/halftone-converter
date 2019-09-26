@@ -73,7 +73,7 @@ def make_transforms(pitch, angle, origin=(0.0, 0.0)):
 		return (x, y)
 	return (transform, inverse_transform)
 
-def halftone_dots(image, pitch, angle, depth):
+def halftone_dots(image, pitch, angle, depth, blur):
 	center = (image.width / 2, image.height / 2)
 	transform, inverse_transform = make_transforms(pitch, angle, center)
 	xy_bounds = [(-pitch, -pitch), (image.width + pitch, -pitch), (image.width + pitch, image.height + pitch), (-pitch, image.height + pitch)]
@@ -83,18 +83,19 @@ def halftone_dots(image, pitch, angle, depth):
 	lower_v = min([v for u, v in uv_bounds])
 	upper_v = max([v for u, v in uv_bounds])
 	boundary = lambda u, v: lower_u <= u <= upper_u and lower_v <= v <= upper_v
-	#blurred = image.filter(ImageFilter.GaussianBlur(pitch / 2))
-	blurred = image.filter(ImageFilter.BoxBlur(pitch / 2))
+	blurred = image.filter(ImageFilter.GaussianBlur(pitch / 2)) if blur == "gaussian" else (image.filter(ImageFilter.BoxBlur(pitch / 2)) if blur == "box" else image)
 	valid_uvs = [p for p in product(range(floor(lower_u), ceil(upper_u) + 1), range(floor(lower_v), ceil(upper_v) + 1)) if boundary(*p)]
 	for u, v in valid_uvs:
 		x, y = inverse_transform(u, v)
 		color = blurred.getpixel((min(max(x, 0), image.width-1), min(max(y, 0), image.height-1)))
 		yield (x, y, color)
 
-def halftone_image(image, pitch, angle, scale):
-	depth = 256
+def halftone_image(image, pitch, angle, scale, blur, dry_run):
 	width = round(image.width * scale)
 	height = round(image.height * scale)
+	if dry_run:
+		return image.resize((width, height), Image.LANCZOS)
+	depth = 256
 	foreground = (1.0, 1.0, 1.0, 1.0)
 	background = (0.0, 0.0, 0.0, 1.0)
 	radius = make_radius(pitch, depth)
@@ -102,23 +103,28 @@ def halftone_image(image, pitch, angle, scale):
 	context = Context(surface)
 	pattern = context.get_source()
 	pattern.set_filter(Filter.BEST)
-	#context.set_antialias(Antialias.BEST)
 	context.set_antialias(Antialias.GRAY)
 	context.set_operator(OPERATOR_SOURCE)
 	context.set_source_rgba(*background)
 	context.rectangle(0, 0, width, height)
 	context.fill()
 	context.set_source_rgba(*foreground)
-	for x, y, color in halftone_dots(image, pitch, angle, depth):
+	for x, y, color in halftone_dots(image, pitch, angle, depth, blur):
 		r = radius(color) * scale
 		context.arc(x * scale, y * scale, r, 0, 2 * pi)
 		context.fill()
 	return Image.frombuffer("RGBA", (width, height), surface.get_data(), "raw", "RGBA", 0, 1).getchannel("G")
 
-def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0):
+def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=None, keep_flag=(False, False, False, False)):
 	c, m, y, k = image.split()
-	cyan = halftone_image(c, pitch, angles[0], scale)
-	magenta = halftone_image(m, pitch, angles[1], scale)
-	yellow = halftone_image(y, pitch, angles[2], scale)
-	key = halftone_image(k, pitch, angles[3], scale)
+	cyan = halftone_image(c, pitch, angles[0], scale, blur, keep_flag[0])
+	magenta = halftone_image(m, pitch, angles[1], scale, blur, keep_flag[1])
+	yellow = halftone_image(y, pitch, angles[2], scale, blur, keep_flag[2])
+	key = halftone_image(k, pitch, angles[3], scale, blur, keep_flag[3])
 	return Image.merge("CMYK", [cyan, magenta, yellow, key])
+
+def make_profile_conversion(profiles, intent, mode):
+	in_profile, out_profile = profiles
+	def profile_conversion(image):
+		return ImageCms.profileToProfile(image, in_profile, out_profile, renderingIntent=intent, outputMode=mode)
+	return profile_conversion
