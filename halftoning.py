@@ -2,28 +2,27 @@ from argparse import ArgumentParser
 from PIL import Image, ImageCms
 from functions import halftone_image
 
-'''
-def halftone_cmyk_image(image, pitch, angles, scale):
-	cyan, m, y, k = image.split()
-	cyan_angle,
-	c = halftone_image(cyan, pitch, cyan_angle, scale)
-
-	return Image.merge("CMYK", [c, m, y, k])
-'''
-
-'''
 # コマンドライン引数をパース
 parser = arg.ArgumentParser(allow_abbrev=False, description="Halftoning ")
 parser.add_argument("images", metavar="FILE", nargs="+", help="")
 parser.add_argument("-d", "--directory", help="")
-parser.add_argument("-rp", "--rgb-profile", help="")
-parser.add_argument("-cp", "--cmyk-profile", help="")
 parser.add_argument("-p", "--prefix", help="")
 parser.add_argument("-s", "--suffix", help="")
-parser.add_argument("-c", "--cmyk", action="store_true", help="")
-parser.add_argument("-l", "--layers", action="store_true", help="")
 parser.add_argument("-f", "--force", action="store_true", help="")
 parser.add_argument("-e", "--enumerate", action="store_true", help="")
+parser.add_argument("-c", "--cmyk", action="store_true", help="")
+parser.add_argument("-b", "--bands", action="store_true", help="")
+parser.add_argument("-ip", "--input-profile", help="")
+parser.add_argument("-cp", "--cmyk-profile", help="")
+parser.add_argument("-op", "--output-profile", help="")
+parser.add_argument("-ig", "--ignore-embedded-profile", help="")
+parser.add_argument("-kc", "--keep-cyan", action="store_true", help="")
+parser.add_argument("-km", "--keep-magenta", action="store_true", help="")
+parser.add_argument("-ky", "--keep-yellow", action="store_true", help="")
+parser.add_argument("-kk", "--keep-key", action="store_true", help="")
+parser.add_argument("-kb", "--keep-black", action="store_true", help="")
+parser.add_argument("-nb", "--no-blur", action="store_true", help="")
+parser.add_argument("-bb", "--box-blur", action="store_true", help="")
 args = parser.parse_args()
 
 # debug
