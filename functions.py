@@ -1,4 +1,5 @@
 from sys import float_info
+from io import BytesIO
 from itertools import product
 from math import floor, ceil, sqrt, sin, cos, acos, pi
 from PIL import Image, ImageFilter, ImageCms
@@ -132,8 +133,12 @@ def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=N
 	return Image.merge("CMYK", [cyan, magenta, yellow, key])
 
 # プロファイル変換のラッパー関数を返す
-def make_profile_conversion(profiles, intent, mode):
-	in_profile, out_profile = profiles
+def make_profile_transform(profiles, modes, intent, prefer_embedded=True):
+	transform = ImageCms.buildTransform(*profiles, *modes, intent)
 	def profile_conversion(image):
-		return ImageCms.profileToProfile(image, in_profile, out_profile, renderingIntent=intent, outputMode=mode)
+		maybe_icc = image.info.get("icc_profile")
+		if not prefer_embedded or maybe_icc == None:
+			return ImageCms.applyTransform(image, transform)
+		em_profile = ImageCms.ImageCmsProfile(BytesIO(maybe_icc))
+		return ImageCms.profileToProfile(image, em_profile, profiles[1], renderingIntent=intent, outputMode=modes[1])
 	return profile_conversion
