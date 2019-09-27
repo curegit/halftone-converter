@@ -90,10 +90,10 @@ def halftone_dots(image, pitch, angle, depth, blur):
 		color = blurred.getpixel((min(max(x, 0), image.width-1), min(max(y, 0), image.height-1)))
 		yield (x, y, color)
 
-def halftone_image(image, pitch, angle, scale, blur, dry_run):
+def halftone_image(image, pitch, angle=45, scale=1.0, blur=None, keep_flag=False):
 	width = round(image.width * scale)
 	height = round(image.height * scale)
-	if dry_run:
+	if keep_flag:
 		return image.resize((width, height), Image.LANCZOS)
 	depth = 256
 	foreground = (1.0, 1.0, 1.0, 1.0)
@@ -115,12 +115,12 @@ def halftone_image(image, pitch, angle, scale, blur, dry_run):
 		context.fill()
 	return Image.frombuffer("RGBA", (width, height), surface.get_data(), "raw", "RGBA", 0, 1).getchannel("G")
 
-def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=None, keep_flag=(False, False, False, False)):
+def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=None, keep_flags=(False, False, False, False)):
 	c, m, y, k = image.split()
-	cyan = halftone_image(c, pitch, angles[0], scale, blur, keep_flag[0])
-	magenta = halftone_image(m, pitch, angles[1], scale, blur, keep_flag[1])
-	yellow = halftone_image(y, pitch, angles[2], scale, blur, keep_flag[2])
-	key = halftone_image(k, pitch, angles[3], scale, blur, keep_flag[3])
+	cyan = halftone_image(c, pitch, angles[0], scale, blur, keep_flags[0])
+	magenta = halftone_image(m, pitch, angles[1], scale, blur, keep_flags[1])
+	yellow = halftone_image(y, pitch, angles[2], scale, blur, keep_flags[2])
+	key = halftone_image(k, pitch, angles[3], scale, blur, keep_flags[3])
 	return Image.merge("CMYK", [cyan, magenta, yellow, key])
 
 def make_profile_conversion(profiles, intent, mode):
