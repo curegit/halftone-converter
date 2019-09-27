@@ -80,7 +80,7 @@ def make_transforms(pitch, angle, origin=(0.0, 0.0)):
 	return (transform, inverse_transform)
 
 # シングルバンドの画像から網点の位置と階調のイテレータを返す
-def halftone_dots(image, pitch, angle, depth, blur):
+def halftone_dots(image, pitch, angle, blur):
 	center = (image.width / 2, image.height / 2)
 	transform, inverse_transform = make_transforms(pitch, angle, center)
 	xy_bounds = [(-pitch, -pitch), (image.width + pitch, -pitch), (image.width + pitch, image.height + pitch), (-pitch, image.height + pitch)]
@@ -103,10 +103,9 @@ def halftone_image(image, pitch, angle=45, scale=1.0, blur=None, keep_flag=False
 	height = round(image.height * scale)
 	if keep_flag:
 		return image.resize((width, height), Image.LANCZOS)
-	depth = 256
 	foreground = (1.0, 1.0, 1.0, 1.0)
 	background = (0.0, 0.0, 0.0, 1.0)
-	radius = make_radius(pitch, depth)
+	radius = make_radius(pitch, 256)
 	surface = ImageSurface(FORMAT_ARGB32, width, height)
 	context = Context(surface)
 	pattern = context.get_source()
@@ -117,7 +116,7 @@ def halftone_image(image, pitch, angle=45, scale=1.0, blur=None, keep_flag=False
 	context.rectangle(0, 0, width, height)
 	context.fill()
 	context.set_source_rgba(*foreground)
-	for x, y, color in halftone_dots(image, pitch, angle, depth, blur):
+	for x, y, color in halftone_dots(image, pitch, angle, blur):
 		r = radius(color) * scale
 		context.arc(x * scale, y * scale, r, 0, 2 * pi)
 		context.fill()
