@@ -1,9 +1,10 @@
 from argparse import ArgumentParser
+from ast import literal_eval as tuple_eval
 from PIL import Image, ImageCms
-from functions import halftone_image
+from functions import halftone_image, halftone_cmyk_image, make_profile_transform
 
 # コマンドライン引数をパース
-parser = arg.ArgumentParser(allow_abbrev=False, description="Halftoning ")
+parser = ArgumentParser(allow_abbrev=False, description="Halftoning ")
 parser.add_argument("images", metavar="FILE", nargs="+", help="")
 parser.add_argument("-d", "--directory", help="")
 parser.add_argument("-p", "--prefix", help="")
@@ -12,10 +13,12 @@ parser.add_argument("-f", "--force", action="store_true", help="")
 parser.add_argument("-e", "--enumerate", action="store_true", help="")
 parser.add_argument("-c", "--cmyk", action="store_true", help="")
 parser.add_argument("-b", "--bands", action="store_true", help="")
+parser.add_argument("-x", "--pitch", action="store_true", help="")
+parser.add_argument("-a", "--angles", metavar="C,M,Y,K", help="")
 parser.add_argument("-ip", "--input-profile", help="")
 parser.add_argument("-cp", "--cmyk-profile", help="")
 parser.add_argument("-op", "--output-profile", help="")
-parser.add_argument("-ig", "--ignore-embedded-profile", help="")
+parser.add_argument("-ig", "--ignore-embedded-profile", action="store_true", help="")
 parser.add_argument("-kc", "--keep-cyan", action="store_true", help="")
 parser.add_argument("-km", "--keep-magenta", action="store_true", help="")
 parser.add_argument("-ky", "--keep-yellow", action="store_true", help="")
@@ -23,6 +26,7 @@ parser.add_argument("-kk", "--keep-key", action="store_true", help="")
 parser.add_argument("-kb", "--keep-black", action="store_true", help="")
 parser.add_argument("-nb", "--no-blur", action="store_true", help="")
 parser.add_argument("-bb", "--box-blur", action="store_true", help="")
+parser.add_argument("-gb", "--gaussian-blur", action="store_true", help="")
 args = parser.parse_args()
 
 # debug
@@ -30,56 +34,58 @@ print(vars(args))
 print(args.directory)
 
 # 引数のバリデーションと展開
-directory = args.directory if args.direcotry != None else ""
-rgb_profile = args.
-cmyk_profile =
-force = args.force
+#directory = args.directory if args.direcotry != None else ""
+#rgb_profile = args
+#cmyk_profile =
+#force = args.force
 
-radius
-pitch
-c =
-m =
-y =
-k =
+pitch = 2
+keep_flags = (args.keep_cyan, args.keep_magenta, args.keep_yellow, args.keep_key or args.keep_black)
+
+if len([f for f in [args.no_blur, args.box_blur, args.gaussian_blur] if f]) > 1:
+	print("")
+	exit()
+blur = None if args.no_blur else "box" if args.box_blur else "gaussian"
 
 # 出力ディレクトリの確認
 
-#
-for (i, image) in enumerate(images):
-'''
+out_cmyk = False
 
-for i in range(0, 3):
-	img = Image.open("i2.jpg")
-	cmyk = ImageCms.profileToProfile(img, 'sRGB Color Space Profile.icm', 'JapanColor2011Coated.icc', renderingIntent=i, outputMode='CMYK')
+cmyk_initent = 1
+rgb_intent = 3
 
-	rgb = ImageCms.profileToProfile(cmyk, 'JapanColor2011Coated.icc', 'sRGB Color Space Profile.icm', renderingIntent=3, outputMode='RGB')
-	rgb.save(f"h-cmyk-{i}to3.png")
 
-	c, m, y, k = cmyk.split()
+in_profile = ImageCms.createProfile("sRGB")
+cmyk_profile = "profile/JapanColor2011Coated.icc"
+out_profile = in_profile
 
-	nc = halftone_image(c, 2, 15, scale=2)
-	nm = halftone_image(m, 2, 75, scale=2)
-	ny = halftone_image(y, 2, 35, scale=2)
-	nk = halftone_image(k, 2, 45, scale=2)
+ignore_profile = args.ignore_embedded_profile
 
-	img = Image.merge("CMYK", [nc, nm, ny, nk])
-	rgb = ImageCms.profileToProfile(img, 'JapanColor2011Coated.icc', 'sRGB Color Space Profile.icm', renderingIntent=3, outputMode='RGB')
-	rgb.save(f"h-out{i}to3.png")
+srgb =
 
-for i in range(0, 3):
-	img = Image.open("588908_1_20190215131009_800_800.png")
-	cmyk = ImageCms.profileToProfile(img, 'sRGB Color Space Profile.icm', 'JapanColor2011Coated.icc', renderingIntent=i, outputMode='CMYK')
+pt_cmyk = make_profile_transform((in_profile, cmyk_profile), ("RGB", "CMYK"), cmyk_initent, not ignore_profile)
+pt_rgb = make_profile_transform((cmyk_profile, out_profile), ("CMYK", "RGB"), rgb_intent, False)
 
-	rgb = ImageCms.profileToProfile(cmyk, 'JapanColor2011Coated.icc', 'sRGB Color Space Profile.icm', renderingIntent=3, outputMode='RGB')
-	rgb.save(f"b-h-cmyk-{i}to3.png")
 
-	c, m, y, k = cmyk.split()
-
-	nc = halftone_image(c, 2, 15, scale=2)
-	nm = halftone_image(m, 2, 75, scale=2)
-	ny = halftone_image(y, 2, 35, scale=2)
-	nk = halftone_image(k, 2, 45, scale=2)
-
-	img = Image.merge("CMYK", [nc, nm, ny, nk])
-	rgb = ImageCms.profileToProfile(img, 'JapanColor2011Coated.icc', 'sRGB Color Space Profile.icm', renderingIntent=3, outputMode='RGB')
-	rgb.save(f"b-h-out{i}to3.png")
+# メインループ
+n = len(args.images)
+for i, f in enumerate(args.images):
+	try:
+		img = Image.open(f)
+		if img.mode == "L":
+			pass
+		elif img.mode == "CMYK":
+			pass
+		elif img.mode == "RGB":
+			cmyk = pt_cmyk(img)
+			cmyk.save(f"{i}.tiff")
+			halftone = halftone_cmyk_image(cmyk, pitch, blur=blur, keep_flags=keep_flags)
+			if out_cmyk:
+				halftone.save(f"{i}.png")
+			else:
+				pt_rgb(halftone).save(f"{i}.png")
+		else:
+			pass
+		print(f"{i + 1} / {n} Done")
+	except:
+		print(f"{i + 1} / {n} Error")
