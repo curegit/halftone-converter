@@ -1,7 +1,7 @@
 from sys import float_info
 from io import BytesIO
 from itertools import product
-from math import floor, ceil, sqrt, sin, cos, acos, pi
+from math import floor, ceil, pow, sqrt, sin, cos, acos, pi
 from numpy import frompyfunc, frombuffer, uint8, float64, rint
 from PIL import Image, ImageFilter, ImageCms
 from cairo import ImageSurface, Context, Antialias, Filter, FORMAT_ARGB32, OPERATOR_SOURCE
@@ -144,9 +144,25 @@ def make_profile_transform(profiles, modes, intent, prefer_embedded=True):
 		return ImageCms.profileToProfile(image, em_profile, profiles[1], renderingIntent=intent, outputMode=modes[1])
 	return profile_conversion
 
-# 近似によるRGBとCMYKの色の変換関数を返す
-def make_fake_conversions(k_threshold):
+# sRGBのガンマ変換
+def gamma_forward(u):
+	if u <= 0.0031308:
+		return 12.92 * u
+	else:
+		return 1.055 * pow(u, 1 / 2.4) - 0.055
+
+# sRGBの逆ガンマ変換
+def gamma_reverse(u):
+	if u <= 0.04045:
+		return u / 12.92
+	else:
+		return pow((u + 0.055) / 1.055, 2.4)
+
+# 近似によるsRGBとCMYKの色の変換関数を返す
+def make_fake_conversions(k_threshold, gamma_correction):
 	def rgb_2_cmyk(r, g, b):
+		if gamma_correction:
+			r, g, b = gamma_reverse(r), gamma_reverse(g), gamma_reverse(b)
 		k = max(0, min(1, (min(1 - r, 1 - g, 1 - b) - k_threshold) / (1 - k_threshold)))
 		c = 0.0 if abs(1 - k) <= float_info.epsilon * 4 else max(0, min(1, (1 - r - k) / (1 - k)))
 		m = 0.0 if abs(1 - k) <= float_info.epsilon * 4 else max(0, min(1, (1 - g - k) / (1 - k)))
@@ -156,12 +172,14 @@ def make_fake_conversions(k_threshold):
 		r = min(1, 1 - min(1, c * (1 - k) + k))
 		g = min(1, 1 - min(1, m * (1 - k) + k))
 		b = min(1, 1 - min(1, y * (1 - k) + k))
+		if gamma_correction:
+			r, g, b = gamma_forward(r), gamma_forward(g), gamma_forward(b)
 		return r, g, b
 	return (rgb_2_cmyk, cmyk_2_rgb)
 
-# 近似によるRGBとCMYKの画像の変換関数を返す
-def make_fake_transforms(k_threshold=0.5):
-	rgb2cmyk, cmyk2rgb = make_fake_conversions(k_threshold)
+# 近似によるsRGBとCMYKの画像の変換関数を返す
+def make_fake_transforms(k_threshold=0.5, gamma_correction=True):
+	rgb2cmyk, cmyk2rgb = make_fake_conversions(k_threshold, gamma_correction)
 	rgb2cmyk_univ = frompyfunc(rgb2cmyk, 3, 4)
 	cmyk2rgb_univ = frompyfunc(cmyk2rgb, 4, 3)
 	def rgb_2_cmyk(image):
