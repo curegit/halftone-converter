@@ -92,11 +92,10 @@ def halftone_dots(image, pitch, angle, blur):
 	upper_v = max([v for u, v in uv_bounds])
 	boundary = lambda u, v: lower_u <= u <= upper_u and lower_v <= v <= upper_v
 	blurred = image.filter(ImageFilter.GaussianBlur(pitch / 2)) if blur == "gaussian" else (image.filter(ImageFilter.BoxBlur(pitch / 2)) if blur == "box" else image)
-	img_array = frombuffer(blurred.tobytes(), dtype=uint8).reshape(blurred.height, blurred.width)
 	valid_uvs = [p for p in product(range(floor(lower_u), ceil(upper_u) + 1), range(floor(lower_v), ceil(upper_v) + 1)) if boundary(*p)]
 	for u, v in valid_uvs:
 		x, y = inverse_transform(u, v)
-		color = img_array[min(max(round(y - 0.5), 0), image.height-1), min(max(round(x - 0.5), 0), image.width-1)]
+		color = blurred.getpixel((min(max(x, 0), image.width-1), min(max(y, 0), image.height-1)))
 		yield (x, y, color)
 
 # シングルバンドの画像を網点化した画像を返す
