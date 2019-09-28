@@ -1,7 +1,7 @@
 from sys import float_info
 from io import BytesIO
 from itertools import product
-from math import floor, ceil, pow, sqrt, sin, cos, acos, pi
+from math import floor, ceil, sqrt, sin, cos, acos, pi
 from numpy import frompyfunc, frombuffer, uint8, float64, rint
 from PIL import Image, ImageFilter, ImageCms
 from cairo import ImageSurface, Context, Antialias, Filter, FORMAT_ARGB32, OPERATOR_SOURCE
@@ -148,14 +148,14 @@ def gamma_forward(u):
 	if u <= 0.0031308:
 		return 12.92 * u
 	else:
-		return 1.055 * pow(u, 1 / 2.4) - 0.055
+		return 1.055 * u ** (1 / 2.4) - 0.055
 
 # sRGBの逆ガンマ変換
 def gamma_reverse(u):
 	if u <= 0.04045:
 		return u / 12.92
 	else:
-		return pow((u + 0.055) / 1.055, 2.4)
+		return ((u + 0.055) / 1.055) ** 2.4
 
 # 近似によるsRGBとCMYKの色の変換関数を返す
 def make_fake_conversions(k_threshold, gamma_correction):
