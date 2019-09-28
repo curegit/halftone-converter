@@ -3,7 +3,7 @@ from io import BytesIO
 from itertools import product
 from math import floor, ceil, sqrt, sin, cos, acos, pi
 from numpy import frompyfunc, frombuffer, uint8, float64, rint
-from PIL import Image, ImageFilter, ImageCms
+from PIL import Image, ImageFilter, ImageCms, ImageOps
 from cairo import ImageSurface, Context, Antialias, Filter, FORMAT_ARGB32, OPERATOR_SOURCE
 
 # ドット半径から占有率を返す関数を返す
@@ -99,7 +99,7 @@ def halftone_dots(image, pitch, angle, blur):
 		yield x, y, color
 
 # シングルバンドの画像を網点化した画像を返す
-def halftone_image(image, pitch, angle=45, scale=1.0, blur=None, keep_flag=False):
+def halftone_image(image, pitch, angle, scale, blur=None, keep_flag=False):
 	width = round(image.width * scale)
 	height = round(image.height * scale)
 	if keep_flag:
@@ -122,6 +122,12 @@ def halftone_image(image, pitch, angle=45, scale=1.0, blur=None, keep_flag=False
 		context.arc(x * scale, y * scale, r, 0, 2 * pi)
 		context.fill()
 	return Image.frombuffer("RGBA", (width, height), surface.get_data(), "raw", "RGBA", 0, 1).getchannel("G")
+
+# グレースケールの画像を網点化した画像を返す
+def halftone_grayscale_image(image, pitch, angle=45, scale=1.0, blur=None, keep_flag=False):
+	inverted = ImageOps.invert(image)
+	halftone = halftone_image(inverted, pitch, angle, scale, blur, keep_flag)
+	return ImageOps.invert(halftone)
 
 # CMYKの画像を網点化した画像を返す
 def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=None, keep_flags=(False, False, False, False)):
