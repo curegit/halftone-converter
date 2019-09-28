@@ -71,18 +71,18 @@ def make_transforms(pitch, angle, origin=(0.0, 0.0)):
 		y -= origin[1]
 		u = (x * cos(theta) - y * sin(theta)) / pitch
 		v = (x * sin(theta) + y * cos(theta)) / pitch
-		return (u, v)
+		return u, v
 	def inverse_transform(u, v):
 		x = (u * cos(theta) + v * sin(theta)) * pitch
 		y = (v * cos(theta) - u * sin(theta)) * pitch
 		x += origin[0]
 		y += origin[1]
-		return (x, y)
-	return (transform, inverse_transform)
+		return x, y
+	return transform, inverse_transform
 
 # シングルバンドの画像から網点の位置と階調のイテレータを返す
 def halftone_dots(image, pitch, angle, blur):
-	center = (image.width / 2, image.height / 2)
+	center = image.width / 2, image.height / 2
 	transform, inverse_transform = make_transforms(pitch, angle, center)
 	xy_bounds = [(-pitch, -pitch), (image.width + pitch, -pitch), (image.width + pitch, image.height + pitch), (-pitch, image.height + pitch)]
 	uv_bounds = [transform(*p) for p in xy_bounds]
@@ -96,7 +96,7 @@ def halftone_dots(image, pitch, angle, blur):
 	for u, v in valid_uvs:
 		x, y = inverse_transform(u, v)
 		color = blurred.getpixel((min(max(x, 0), image.width-1), min(max(y, 0), image.height-1)))
-		yield (x, y, color)
+		yield x, y, color
 
 # シングルバンドの画像を網点化した画像を返す
 def halftone_image(image, pitch, angle=45, scale=1.0, blur=None, keep_flag=False):
@@ -174,7 +174,7 @@ def make_fake_conversions(k_threshold, gamma_correction):
 		if gamma_correction:
 			r, g, b = gamma_forward(r), gamma_forward(g), gamma_forward(b)
 		return r, g, b
-	return (rgb_2_cmyk, cmyk_2_rgb)
+	return rgb_2_cmyk, cmyk_2_rgb
 
 # 近似によるsRGBとCMYKの画像の変換関数を返す
 def make_fake_transforms(k_threshold=0.5, gamma_correction=True):
@@ -203,4 +203,4 @@ def make_fake_transforms(k_threshold=0.5, gamma_correction=True):
 		g = Image.frombuffer("L", (image.width, image.height), rint(rgb_array[1].astype(float64) * 255).astype(uint8), "raw", "L", 0, 1)
 		b = Image.frombuffer("L", (image.width, image.height), rint(rgb_array[2].astype(float64) * 255).astype(uint8), "raw", "L", 0, 1)
 		return Image.merge("RGB", [r, g, b])
-	return (rgb_2_cmyk, cmyk_2_rgb)
+	return rgb_2_cmyk, cmyk_2_rgb
