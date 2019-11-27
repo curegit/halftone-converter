@@ -69,7 +69,7 @@ pt_rgb = make_profile_transform((cmyk_profile, out_profile), ("CMYK", "RGB"), rg
 
 # メインループ
 n = len(args.images)
-for i, f in enumerate(args.images):
+for i, f in enumerate(args.images, 1):
 	try:
 		img = Image.open(f)
 		if img.mode == "L":
@@ -86,6 +86,6 @@ for i, f in enumerate(args.images):
 				pt_rgb(halftone).save(f"{i}.png")
 		else:
 			pass
-		print(f"{i + 1} / {n} Done")
+		print(f"{i} / {n} Done")
 	except:
-		print(f"{i + 1} / {n} Error")
+		print(f"{i} / {n} Error")
