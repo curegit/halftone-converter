@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
-from ast import literal_eval as tuple_eval
 from PIL import Image, ImageCms
-from functions import halftone_image, halftone_cmyk_image, make_profile_transform
+from utilities import mkdirp, filepath, filerelpath, altfilepath
+from functions import halftone_grayscale_image, halftone_cmyk_image, make_profile_transform
 
 # コマンドライン引数をパース
 parser = ArgumentParser(allow_abbrev=False, description="Halftoning ")
