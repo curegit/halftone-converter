@@ -33,6 +33,7 @@ parser.add_argument("-a", "--angles", metavar="C,M,Y,K", help="")
 parser.add_argument("-ip", "--input-profile", help="")
 parser.add_argument("-cp", "--cmyk-profile", help="")
 parser.add_argument("-op", "--output-profile", help="")
+
 parser.add_argument("-ig", "--ignore-embedded-profile", action="store_true", help="")
 
 parser.add_argument("--keep-cyan", action="store_true", help="")

@@ -7,7 +7,7 @@ def make_profile_transform(profiles, modes, intent, prefer_embedded=True):
 	transform = ImageCms.buildTransform(*profiles, *modes, intent)
 	def profile_conversion(image):
 		maybe_icc = image.info.get("icc_profile")
-		if not prefer_embedded or maybe_icc == None:
+		if not prefer_embedded or maybe_icc is None:
 			return ImageCms.applyTransform(image, transform)
 		em_profile = ImageCms.ImageCmsProfile(BytesIO(maybe_icc))
 		return ImageCms.profileToProfile(image, em_profile, profiles[1], renderingIntent=intent, outputMode=modes[1])
