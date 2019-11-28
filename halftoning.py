@@ -18,8 +18,8 @@ parser.add_argument("-e", "--enumerate", metavar="START", type=int, nargs="?", c
 
 
 parser.add_argument("-c", "--cmyk", action="store_true", help="")
-parser.add_argument("-b", "--bands", action="store_true", help="")
-parser.add_argument("-x", "--pitch", action="store_true", help="")
+parser.add_argument("--bands", action="store_true", help="")
+parser.add_argument("-x", "--pitch", metavar="PX", type=float, help="")
 
 
 parser.add_argument("-ig", "--ignore-embedded-profile", action="store_true", help="")
@@ -29,7 +29,7 @@ parser.add_argument("-cp", "--cmyk-profile", help="")
 parser.add_argument("-op", "--output-profile", help="")
 
 
-
+parser.add_argument("-b", "--blur", choices=["none", "box", "gaussian"], default="gaussian", help="")
 
 blur_group = parser.add_mutually_exclusive_group()
 blur_group.add_argument("--no-blur", action="store_true", help="aa")
@@ -63,7 +63,7 @@ suffix = basename(args.suffix)
 force = args.force
 enum = args.enumerate
 
-pitch = 2
+pitch = max(0.1, args.pitch)
 cmyk_angles = ()
 cmyk_keep_flags = (args.keep_cyan, args.keep_magenta, args.keep_yellow, args.keep_key or args.keep_black)
 rgb_keep_flags = ()
