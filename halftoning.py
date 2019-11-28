@@ -9,41 +9,49 @@ from modules.core import halftone_grayscale_image, halftone_cmyk_image, halftone
 parser = ArgumentParser(allow_abbrev=False, description="Halftoning ")
 parser.add_argument("images", metavar="FILE", nargs="+", help="")
 
-
-parser.add_argument("-d", "--directory", help="")
+parser.add_argument("-d", "--directory", metavar="DEST", help="")
+parser.add_argument("-f", "--force", action="store_true", help="")
 parser.add_argument("-p", "--prefix", help="")
 parser.add_argument("-s", "--suffix", help="")
-parser.add_argument("-f", "--force", action="store_true", help="")
-parser.add_argument("-e", "--enumerate", action="store_true", help="")
+parser.add_argument("-e", "--enumerate", metavar="START", type=int, nargs="?", const=1, help="")
+
 
 
 parser.add_argument("-c", "--cmyk", action="store_true", help="")
 parser.add_argument("-b", "--bands", action="store_true", help="")
 parser.add_argument("-x", "--pitch", action="store_true", help="")
 
-gh = parser.add_argument_group("cmyk")
-gh.add_argument("-agn")
-blur_group = gh.add_mutually_exclusive_group()
-blur_group.add_argument("--no-blur", action="store_true", help="aa")
-blur_group.add_argument("--box-blur", action="store_true", help="bb")
-blur_group.add_argument("--gaussian-blur", action="store_true", help="cc")
 
-parser.add_argument("-a", "--angles", metavar="C,M,Y,K", help="")
+parser.add_argument("-ig", "--ignore-embedded-profile", action="store_true", help="")
 
 parser.add_argument("-ip", "--input-profile", help="")
 parser.add_argument("-cp", "--cmyk-profile", help="")
 parser.add_argument("-op", "--output-profile", help="")
 
-parser.add_argument("-ig", "--ignore-embedded-profile", action="store_true", help="")
-
-parser.add_argument("--keep-cyan", action="store_true", help="")
-parser.add_argument("--keep-magenta", action="store_true", help="")
-parser.add_argument("--keep-yellow", action="store_true", help="")
-parser.add_argument("--keep-key", action="store_true", help="")
-parser.add_argument("--keep-black", action="store_true", help="")
 
 
 
+blur_group = parser.add_mutually_exclusive_group()
+blur_group.add_argument("--no-blur", action="store_true", help="aa")
+blur_group.add_argument("--box-blur", action="store_true", help="bb")
+blur_group.add_argument("--gaussian-blur", action="store_true", help="cc")
+
+gray_group = parser.add_argument_group("gray mode")
+gray_group.add_argument("--angle")
+
+cmyk_group = parser.add_argument_group("cmyk mode")
+cmyk_group.add_argument("--cmyk-angles", metavar="DEG", nargs=4, help="")
+cmyk_group.add_argument("--keep-cyan", action="store_true", help="")
+cmyk_group.add_argument("--keep-magenta", action="store_true", help="")
+cmyk_group.add_argument("--keep-yellow", action="store_true", help="")
+cmyk_group.add_argument("--keep-key", action="store_true", help="")
+cmyk_group.add_argument("--keep-black", action="store_true", help="")
+
+rgb_group = parser.add_argument_group("rgb mode")
+rgb_group.add_argument("--rgb-angles", metavar="DEG", nargs=3, help="")
+rgb_group.add_argument("--keep-red", action="store_true", help="")
+rgb_group.add_argument("--keep-green", action="store_true", help="")
+rgb_group.add_argument("--keep-blue", action="store_true", help="")
 
 args = parser.parse_args()
 
@@ -56,8 +64,9 @@ force = args.force
 enum = args.enumerate
 
 pitch = 2
-keep_flags = (args.keep_cyan, args.keep_magenta, args.keep_yellow, args.keep_key or args.keep_black)
-
+cmyk_angles = ()
+cmyk_keep_flags = (args.keep_cyan, args.keep_magenta, args.keep_yellow, args.keep_key or args.keep_black)
+rgb_keep_flags = ()
 
 
 if len([f for f in [args.no_blur, args.box_blur, args.gaussian_blur] if f]) > 1:
