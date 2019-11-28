@@ -138,6 +138,14 @@ def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=N
 	key = halftone_image(k, pitch, angles[3], scale, blur, keep_flags[3])
 	return Image.merge("CMYK", [cyan, magenta, yellow, key])
 
+# RGBの画像を網点化した画像を返す
+def halftone_rgb_image(image, pitch, angles=(15, 75, 30), scale=1.0, blur=None, keep_flags=(False, False, False)):
+	r, g, b = image.split()
+	red = halftone_grayscale_image(r, pitch, angles[0], scale, blur, keep_flags[0])
+	green = halftone_grayscale_image(g, pitch, angles[1], scale, blur, keep_flags[1])
+	blue = halftone_grayscale_image(b, pitch, angles[2], scale, blur, keep_flags[2])
+	return Image.merge("RGB", [red, green, blue])
+
 # プロファイル変換のラッパー関数を返す
 def make_profile_transform(profiles, modes, intent, prefer_embedded=True):
 	transform = ImageCms.buildTransform(*profiles, *modes, intent)
