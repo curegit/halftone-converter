@@ -1,8 +1,10 @@
+import sys
 import os
 import os.path
 import inspect
 
-import sysdef eprint(*args, **kwargs):
+# 標準エラー出力にプリントする
+def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 # ディレクトリが無ければ再帰的に作成する
@@ -20,7 +22,7 @@ def filerelpath(relpath):
 	d = os.getcwd() if f == "<stdin>" else os.path.dirname(f)
 	return os.path.join(d, relpath)
 
-# ファイルパスがすでに存在したら別のファイル名にして返す
+# パスにファイルがすでに存在したら別のファイル名にしたパスを返す
 def altfilepath(path, prefix="_"):
 	while os.path.lexists(path):
 		root, ext = os.path.splitext(path)
