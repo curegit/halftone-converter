@@ -1,33 +1,34 @@
-from io import BytesIO
+import io
+import numpy as np
+from sys import float_info
 from PIL import Image, ImageCms
-from numpy import frompyfunc, frombuffer, uint8, float64, rint
 
-# プロファイル変換のラッパー関数を返す
+# プロファイル変換の関数を返す
 def make_profile_transform(profiles, modes, intent, prefer_embedded=True):
 	transform = ImageCms.buildTransform(*profiles, *modes, intent)
 	def profile_conversion(image):
 		maybe_icc = image.info.get("icc_profile")
 		if not prefer_embedded or maybe_icc is None:
 			return ImageCms.applyTransform(image, transform)
-		em_profile = ImageCms.ImageCmsProfile(BytesIO(maybe_icc))
+		em_profile = ImageCms.ImageCmsProfile(io.BytesIO(maybe_icc))
 		return ImageCms.profileToProfile(image, em_profile, profiles[1], renderingIntent=intent, outputMode=modes[1])
 	return profile_conversion
 
-# sRGBのガンマ変換
+# sRGB のガンマ変換
 def gamma_forward(u):
 	if u <= 0.0031308:
 		return 12.92 * u
 	else:
 		return 1.055 * u ** (1 / 2.4) - 0.055
 
-# sRGBの逆ガンマ変換
+# sRGB の逆ガンマ変換
 def gamma_reverse(u):
 	if u <= 0.04045:
 		return u / 12.92
 	else:
 		return ((u + 0.055) / 1.055) ** 2.4
 
-# 近似によるsRGBとCMYKの色の変換関数を返す
+# sRGB と CMYK 間の色の近似的な変換関数を返す
 def make_fake_conversions(k_threshold, gamma_correction):
 	def rgb_2_cmyk(r, g, b):
 		if gamma_correction:
@@ -46,31 +47,31 @@ def make_fake_conversions(k_threshold, gamma_correction):
 		return r, g, b
 	return rgb_2_cmyk, cmyk_2_rgb
 
-# 近似によるsRGBとCMYKの画像の変換関数を返す
+# sRGB と CMYK 間の画像の近似的な変換関数を返す
 def make_fake_transforms(k_threshold=0.5, gamma_correction=True):
 	rgb2cmyk, cmyk2rgb = make_fake_conversions(k_threshold, gamma_correction)
-	rgb2cmyk_univ = frompyfunc(rgb2cmyk, 3, 4)
-	cmyk2rgb_univ = frompyfunc(cmyk2rgb, 4, 3)
+	rgb2cmyk_univ = np.frompyfunc(rgb2cmyk, 3, 4)
+	cmyk2rgb_univ = np.frompyfunc(cmyk2rgb, 4, 3)
 	def rgb_2_cmyk(image):
 		r, g, b = image.split()
-		r_array = frombuffer(r.tobytes(), dtype=uint8) / 255
-		g_array = frombuffer(g.tobytes(), dtype=uint8) / 255
-		b_array = frombuffer(b.tobytes(), dtype=uint8) / 255
+		r_array = np.frombuffer(r.tobytes(), dtype=np.uint8) / 255
+		g_array = np.frombuffer(g.tobytes(), dtype=np.uint8) / 255
+		b_array = np.frombuffer(b.tobytes(), dtype=np.uint8) / 255
 		cmyk_array = rgb2cmyk_univ(r_array, g_array, b_array)
-		c = Image.frombuffer("L", (image.width, image.height), rint(cmyk_array[0].astype(float64) * 255).astype(uint8), "raw", "L", 0, 1)
-		m = Image.frombuffer("L", (image.width, image.height), rint(cmyk_array[1].astype(float64) * 255).astype(uint8), "raw", "L", 0, 1)
-		y = Image.frombuffer("L", (image.width, image.height), rint(cmyk_array[2].astype(float64) * 255).astype(uint8), "raw", "L", 0, 1)
-		k = Image.frombuffer("L", (image.width, image.height), rint(cmyk_array[3].astype(float64) * 255).astype(uint8), "raw", "L", 0, 1)
+		c = Image.frombuffer("L", (image.width, image.height), np.rint(cmyk_array[0].astype(np.float64) * 255).astype(np.uint8), "raw", "L", 0, 1)
+		m = Image.frombuffer("L", (image.width, image.height), np.rint(cmyk_array[1].astype(np.float64) * 255).astype(np.uint8), "raw", "L", 0, 1)
+		y = Image.frombuffer("L", (image.width, image.height), np.rint(cmyk_array[2].astype(np.float64) * 255).astype(np.uint8), "raw", "L", 0, 1)
+		k = Image.frombuffer("L", (image.width, image.height), np.rint(cmyk_array[3].astype(np.float64) * 255).astype(np.uint8), "raw", "L", 0, 1)
 		return Image.merge("CMYK", [c, m, y, k])
 	def cmyk_2_rgb(image):
 		c, m, y, k = image.split()
-		c_array = frombuffer(c.tobytes(), dtype=uint8) / 255
-		m_array = frombuffer(m.tobytes(), dtype=uint8) / 255
-		y_array = frombuffer(y.tobytes(), dtype=uint8) / 255
-		k_array = frombuffer(k.tobytes(), dtype=uint8) / 255
+		c_array = np.frombuffer(c.tobytes(), dtype=np.uint8) / 255
+		m_array = np.frombuffer(m.tobytes(), dtype=np.uint8) / 255
+		y_array = np.frombuffer(y.tobytes(), dtype=np.uint8) / 255
+		k_array = np.frombuffer(k.tobytes(), dtype=np.uint8) / 255
 		rgb_array = cmyk2rgb_univ(c_array, m_array, y_array, k_array)
-		r = Image.frombuffer("L", (image.width, image.height), rint(rgb_array[0].astype(float64) * 255).astype(uint8), "raw", "L", 0, 1)
-		g = Image.frombuffer("L", (image.width, image.height), rint(rgb_array[1].astype(float64) * 255).astype(uint8), "raw", "L", 0, 1)
-		b = Image.frombuffer("L", (image.width, image.height), rint(rgb_array[2].astype(float64) * 255).astype(uint8), "raw", "L", 0, 1)
+		r = Image.frombuffer("L", (image.width, image.height), np.rint(rgb_array[0].astype(np.float64) * 255).astype(np.uint8), "raw", "L", 0, 1)
+		g = Image.frombuffer("L", (image.width, image.height), np.rint(rgb_array[1].astype(np.float64) * 255).astype(np.uint8), "raw", "L", 0, 1)
+		b = Image.frombuffer("L", (image.width, image.height), np.rint(rgb_array[2].astype(np.float64) * 255).astype(np.uint8), "raw", "L", 0, 1)
 		return Image.merge("RGB", [r, g, b])
 	return rgb_2_cmyk, cmyk_2_rgb
