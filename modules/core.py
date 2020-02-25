@@ -1,10 +1,10 @@
 from sys import float_info
-from math import floor, ceil, sqrt, sin, cos, acos, pi
 from itertools import product
+from math import floor, ceil, sqrt, sin, cos, acos, pi
 from PIL import Image, ImageFilter, ImageOps
 from cairo import ImageSurface, Context, Antialias, Filter, FORMAT_ARGB32, OPERATOR_SOURCE
 
-# ドット半径から占有率を返す関数を返す
+# ドット半径から着色部分の占有率を返す関数を返す
 def make_occupancy(pitch):
 	def occupancy(radius):
 		if radius < 0:
@@ -18,7 +18,7 @@ def make_occupancy(pitch):
 			return 1.0
 	return occupancy
 
-# 2分法による求根
+# 二分法による求根アルゴリズム
 def bisection(f, x1, x2, eps):
 	while True:
 		x = (x1 + x2) / 2
@@ -30,7 +30,7 @@ def bisection(f, x1, x2, eps):
 		else:
 			x2 = x
 
-# 占有率からドット半径への変換テーブルをつくる
+# 着色部分の占有率からドット半径への変換テーブルをつくる
 def radius_table(pitch, depth):
 	color = 0
 	occupancy = 0.0
@@ -49,7 +49,7 @@ def radius_table(pitch, depth):
 		occupancy = color / (depth - 1)
 	yield rmax
 
-# 占有率からドット半径を返す関数を返す
+# 着色部分の占有率からドット半径を返す関数を返す
 def make_radius(pitch, depth):
 	table = list(radius_table(pitch, depth))
 	def radius(occupancy):
