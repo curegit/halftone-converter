@@ -2,6 +2,9 @@ import os
 import os.path
 import inspect
 
+import sysdef eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 # ディレクトリが無ければ再帰的に作成する
 def mkdirp(path):
 	os.makedirs(path, exist_ok=True)
