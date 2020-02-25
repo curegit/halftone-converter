@@ -5,7 +5,7 @@ import inspect
 
 # 標準エラー出力にプリントする
 def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+	print(*args, file=sys.stderr, **kwargs)
 
 # ディレクトリが無ければ再帰的に作成する
 def mkdirp(path):
