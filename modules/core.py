@@ -122,24 +122,33 @@ def halftone_image(image, pitch, angle, scale, blur=None, keep_flag=False):
 	return Image.frombuffer("RGBA", (width, height), surface.get_data(), "raw", "RGBA", 0, 1).getchannel("G")
 
 # グレースケールの画像を網点化した画像を返す
-def halftone_grayscale_image(image, pitch, angle=45, scale=1.0, blur=None, keep_flag=False):
+def halftone_grayscale_image(image, pitch, angle=45, scale=1.0, blur=None, keep_flag=False, preserve_profile=True):
 	inverted = ImageOps.invert(image)
 	halftone = halftone_image(inverted, pitch, angle, scale, blur, keep_flag)
-	return ImageOps.invert(halftone)
+	result = ImageOps.invert(halftone)
+	if preserve_profile and image.info.get("icc_profile") is not None:
+		result.info.update(icc_profile=image.info.get("icc_profile"))
+	return result
+
+# RGBの画像を網点化した画像を返す
+def halftone_rgb_image(image, pitch, angles=(15, 75, 30), scale=1.0, blur=None, keep_flags=(False, False, False), preserve_profile=True):
+	r, g, b = image.split()
+	red = halftone_grayscale_image(r, pitch, angles[0], scale, blur, keep_flags[0], False)
+	green = halftone_grayscale_image(g, pitch, angles[1], scale, blur, keep_flags[1], False)
+	blue = halftone_grayscale_image(b, pitch, angles[2], scale, blur, keep_flags[2], False)
+	halftone = Image.merge("RGB", [red, green, blue])
+	if preserve_profile and image.info.get("icc_profile") is not None:
+		halftone.info.update(icc_profile=image.info.get("icc_profile"))
+	return halftone
 
 # CMYKの画像を網点化した画像を返す
-def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=None, keep_flags=(False, False, False, False)):
+def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=None, keep_flags=(False, False, False, False), preserve_profile=True):
 	c, m, y, k = image.split()
 	cyan = halftone_image(c, pitch, angles[0], scale, blur, keep_flags[0])
 	magenta = halftone_image(m, pitch, angles[1], scale, blur, keep_flags[1])
 	yellow = halftone_image(y, pitch, angles[2], scale, blur, keep_flags[2])
 	key = halftone_image(k, pitch, angles[3], scale, blur, keep_flags[3])
-	return Image.merge("CMYK", [cyan, magenta, yellow, key])
-
-# RGBの画像を網点化した画像を返す
-def halftone_rgb_image(image, pitch, angles=(15, 75, 30), scale=1.0, blur=None, keep_flags=(False, False, False)):
-	r, g, b = image.split()
-	red = halftone_grayscale_image(r, pitch, angles[0], scale, blur, keep_flags[0])
-	green = halftone_grayscale_image(g, pitch, angles[1], scale, blur, keep_flags[1])
-	blue = halftone_grayscale_image(b, pitch, angles[2], scale, blur, keep_flags[2])
-	return Image.merge("RGB", [red, green, blue])
+	halftone = Image.merge("CMYK", [cyan, magenta, yellow, key])
+	if preserve_profile and image.info.get("icc_profile") is not None:
+		halftone.info.update(icc_profile=image.info.get("icc_profile"))
+	return halftone

@@ -22,6 +22,12 @@ def filerelpath(relpath):
 	d = os.getcwd() if f == "<stdin>" else os.path.dirname(f)
 	return os.path.join(d, relpath)
 
+# 拡張子を含まないファイル名を返す
+def purefilename(path):
+	root, ext = os.path.splitext(path)
+	head, tail = os.path.split(root)
+	return tail
+
 # パスにファイルがすでに存在したら別のファイル名にしたパスを返す
 def altfilepath(path, prefix="_"):
 	while os.path.lexists(path):

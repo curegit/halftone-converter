@@ -1,12 +1,5 @@
 from os.path import basename
-
-# 正整数を受け入れる変換関数
-def natural(str):
-	value = int(str)
-	if value > 0:
-		return value
-	else:
-		raise ValueError()
+from PIL import ImageCms
 
 # 正の実数を受け入れる変換関数
 def positive(str):
@@ -16,9 +9,35 @@ def positive(str):
 	else:
 		raise ValueError()
 
+# 0-1 の実数を受け入れる変換関数
+def rate(str):
+	value = float(str)
+	if 0 <= value <= 1:
+		return value
+	else:
+		raise ValueError()
+
 # ファイル名を受け入れる変換関数
 def filename(str):
 	if str == basename(str):
 		return str
+	else:
+		raise ValueError()
+
+# 大小文字を区別しないラベルマッチのための変換関数
+def choice(label):
+	return str.lower(label)
+
+# ラベルを受け入れてレンダリングインテントを表す整数を返す
+def intent(label):
+	label = str.lower(label)
+	if label == "perceptual":
+		return ImageCms.INTENT_PERCEPTUAL
+	if label == "saturation":
+		return ImageCms.INTENT_SATURATION
+	if label == "relative":
+		return ImageCms.INTENT_RELATIVE_COLORIMETRIC
+	if label == "absolute":
+		return ImageCms.INTENT_ABSOLUTE_COLORIMETRIC
 	else:
 		raise ValueError()
