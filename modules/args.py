@@ -31,13 +31,15 @@ def choice(label):
 # ラベルを受け入れてレンダリングインテントを表す整数を返す
 def intent(label):
 	label = str.lower(label)
-	if label == "perceptual":
+	if label == "per":
 		return ImageCms.INTENT_PERCEPTUAL
-	if label == "saturation":
+	if label == "sat":
 		return ImageCms.INTENT_SATURATION
-	if label == "relative":
+	if label == "rel":
 		return ImageCms.INTENT_RELATIVE_COLORIMETRIC
-	if label == "absolute":
+	if label == "abs":
 		return ImageCms.INTENT_ABSOLUTE_COLORIMETRIC
+	if 0 <= int(label) <= 3:
+		return int(label)
 	else:
 		raise ValueError()
