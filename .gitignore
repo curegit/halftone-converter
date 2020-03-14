@@ -1,8 +1,8 @@
 # This app
 *.icc
 *.icm
-!profiles/*/*.icc
-!profiles/*/*.icm
+!profiles/*.icc
+!profiles/*.icm
 *.jpg
 *.jpeg
 *.png

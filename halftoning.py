@@ -42,7 +42,7 @@ parser.add_argument("-C", "--cmyk-profile", help="")
 parser.add_argument("-B", "--cmyk-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default="rel", help="")
 
 parser.add_argument("-E", "--ignore-embedded-profile", action="store_true", help="")
-parser.add_argument("-W", "--wide", action="store_true", help="")
+
 parser.add_argument("-D", "--discard-profile", action="store_true", help="")
 
 parser.add_argument("-N", "--naive", action="store_true", help="")
@@ -70,27 +70,27 @@ rgb_keep_flags = (args.keep_red, args.keep_green, args.keep_blue)
 
 # ICC プロファイルを
 if args.gray_profile is None:
-	gray_profile = filerelpath("profiles/openicc/GrayCIE.icc")
+	gray_profile = filerelpath("profiles/sGray.icc")
 else:
 	gray_profile = ImageCms.getOpenProfile(args.gray_profile)
 if args.input_gray_profile is None:
-	in_gray_profile = filerelpath("profiles/openicc/GrayCIE.icc")
+	in_gray_profile = filerelpath("profiles/sGray.icc")
 else:
 	in_gray_profile = ImageCms.getOpenProfile(args.input_gray_profile)
 if args.rgb_profile is None:
-	rgb_profile = filerelpath("profiles/chromasoft/WideGamutD65.icc") if args.wide else filerelpath("profiles/openicc/sRGB.icc")
+	rgb_profile =  filerelpath("profiles/sRGB.icc")
 else:
 	rgb_profile = ImageCms.getOpenProfile(args.rgb_profile)
 if args.input_rgb_profile is None:
-	in_rgb_profile = filerelpath("profiles/openicc/sRGB.icc")
+	in_rgb_profile = filerelpath("profiles/sRGB.icc")
 else:
 	in_rgb_profile = ImageCms.getOpenProfile(args.input_rgb_profile)
 if args.cmyk_profile is None:
-	cmyk_profile = filerelpath("profiles/colormanagement/ISOCoatedV2.icc")
+	cmyk_profile = filerelpath("profiles/ISOCoatedV2.icc")
 else:
 	cmyk_profile = ImageCms.getOpenProfile(args.cmyk_profile)
 if args.input_cmyk_profile is None:
-	in_cmyk_profile = filerelpath("profiles/colormanagement/ISOCoatedV2.icc")
+	in_cmyk_profile = filerelpath("profiles/ISOCoatedV2.icc")
 else:
 	in_cmyk_profile = ImageCms.getOpenProfile(args.input_cmyk_profile)
 
