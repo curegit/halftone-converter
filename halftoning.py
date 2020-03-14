@@ -9,52 +9,36 @@ from modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_
 parser = ArgumentParser(allow_abbrev=False, description="Halftoning")
 parser.add_argument("images", metavar="FILE", nargs="+", help="")
 parser.add_argument("-q", "--quiet", action="store_true", help="Interpret FILE values as glob patterns")
-parser.add_argument("-n", "--dry", action="store_true", help="Interpret FILE values as glob patterns")
+parser.add_argument("-n", "--dry-run", action="store_true", help="Interpret FILE values as glob patterns")
 parser.add_argument("-g", "--glob", action="store_true", help="Interpret FILE values as glob patterns")
 parser.add_argument("-f", "--force", action="store_true", help="")
 parser.add_argument("-d", "--directory", metavar="DIR", default=".", help="")
 parser.add_argument("-P", "--prefix", type=filename, default="", help="")
-parser.add_argument("-s", "--suffix", type=filename, default="-halftone", help="")
+parser.add_argument("-S", "--suffix", type=filename, default="-halftone", help="")
 parser.add_argument("-e", "--enumerate", metavar="START", type=int, nargs="?", const=1, help="")
-
 parser.add_argument("-p", "--pitch", metavar="PX", type=positive, default=2, help="")
 parser.add_argument("-x", "--scale", type=positive, default=1, help="")
 parser.add_argument("-b", "--blur", type=choice, choices=["none", "box", "gaussian"], default="gaussian", help="")
-
 parser.add_argument("-m", "--mode", type=choice, choices=["auto", "gray", "rgb", "cmyk"], default="auto", help="")
-
 parser.add_argument("-o", "--output", type=choice, choices=["auto", "gray", "rgb", "cmyk"], default="auto", help="")
-
-parser.add_argument("-t", "--tiff", action="store_true", help="")
-
-
-
-
-parser.add_argument("-A", "--input-gray-profile", metavar="GRAY_PROFILE", help="")
+parser.add_argument("-T", "--tiff", action="store_true", help="")
+parser.add_argument("-Y", "--input-gray-profile", metavar="GRAY_PROFILE", help="")
 parser.add_argument("-I", "--input-rgb-profile", metavar="RGB_PROFILE", help="")
 parser.add_argument("-K", "--input-cmyk-profile", metavar="CMYK_PROFILE", help="")
-
-parser.add_argument("-G", "--gray-profile", help="")
-parser.add_argument("-L", "--gray-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default="rel", help="")
+parser.add_argument("-L", "--gray-profile", help="")
+parser.add_argument("-l", "--gray-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default="rel", help="")
 parser.add_argument("-R", "--rgb-profile", help="")
-parser.add_argument("-Q", "--rgb-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default="rel", help="")
+parser.add_argument("-r", "--rgb-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default="rel", help="")
 parser.add_argument("-C", "--cmyk-profile", help="")
-parser.add_argument("-B", "--cmyk-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default="rel", help="")
-
-parser.add_argument("-E", "--ignore-embedded-profile", action="store_true", help="")
-
+parser.add_argument("-c", "--cmyk-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default="rel", help="")
+parser.add_argument("-G", "--ignore-embedded-profile", action="store_true", help="")
 parser.add_argument("-D", "--discard-profile", action="store_true", help="")
-
 parser.add_argument("-N", "--naive", action="store_true", help="")
-parser.add_argument("--black-start", type=rate, help="")
-parser.add_argument("--gamma", action="store_true", help="")
-
-
-
-
-parser.add_argument("--angle", "--gray-angle", metavar="DEG", dest="gray_angle", type=float, default=45, help="")
-parser.add_argument("--Angles", "--rgb-angles", metavar="DEG", dest="rgb_angles", type=float, nargs=3, default=(15, 75, 30), help="")
-parser.add_argument("--angles", "--cmyk-angles", metavar="DEG", dest="cmyk_angles", type=float, nargs=4, default=(15, 75, 30, 45), help="")
+parser.add_argument("-B", "--black-start", metavar="RATE", type=rate, help="")
+parser.add_argument("-M", "--gamma", action="store_true", help="")
+parser.add_argument("-A", "--angle", "--gray-angle", metavar="DEG", dest="gray_angle", type=float, default=45, help="")
+parser.add_argument("-t", "--Angles", "--rgb-angles", metavar="DEG", dest="rgb_angles", type=float, nargs=3, default=(15, 75, 30), help="")
+parser.add_argument("-a", "--angles", "--cmyk-angles", metavar="DEG", dest="cmyk_angles", type=float, nargs=4, default=(15, 75, 30, 45), help="")
 parser.add_argument("--keep-red", action="store_true", help="")
 parser.add_argument("--keep-green", action="store_true", help="")
 parser.add_argument("--keep-blue", action="store_true", help="")
@@ -64,37 +48,33 @@ parser.add_argument("--keep-yellow", action="store_true", help="")
 parser.add_argument("--keep-key", "--keep-black", action="store_true", help="")
 args = parser.parse_args()
 
-#
-cmyk_keep_flags = (args.keep_cyan, args.keep_magenta, args.keep_yellow, args.keep_key)
-rgb_keep_flags = (args.keep_red, args.keep_green, args.keep_blue)
-
-# ICC プロファイルを
+# ICC プロファイルを読み込む
 if args.gray_profile is None:
-	gray_profile = filerelpath("profiles/sGray.icc")
+	gray_profile = ImageCms.getOpenProfile(filerelpath("profiles/sGray.icc"))
 else:
 	gray_profile = ImageCms.getOpenProfile(args.gray_profile)
 if args.input_gray_profile is None:
-	in_gray_profile = filerelpath("profiles/sGray.icc")
+	in_gray_profile = ImageCms.getOpenProfile(filerelpath("profiles/sGray.icc"))
 else:
 	in_gray_profile = ImageCms.getOpenProfile(args.input_gray_profile)
 if args.rgb_profile is None:
-	rgb_profile =  filerelpath("profiles/sRGB.icc")
+	rgb_profile =  ImageCms.getOpenProfile(filerelpath("profiles/sRGB.icc"))
 else:
 	rgb_profile = ImageCms.getOpenProfile(args.rgb_profile)
 if args.input_rgb_profile is None:
-	in_rgb_profile = filerelpath("profiles/sRGB.icc")
+	in_rgb_profile = ImageCms.getOpenProfile(filerelpath("profiles/sRGB.icc"))
 else:
 	in_rgb_profile = ImageCms.getOpenProfile(args.input_rgb_profile)
 if args.cmyk_profile is None:
-	cmyk_profile = filerelpath("profiles/ISOCoatedV2.icc")
+	cmyk_profile = ImageCms.getOpenProfile(filerelpath("profiles/SWOP.icc"))
 else:
 	cmyk_profile = ImageCms.getOpenProfile(args.cmyk_profile)
 if args.input_cmyk_profile is None:
-	in_cmyk_profile = filerelpath("profiles/ISOCoatedV2.icc")
+	in_cmyk_profile = ImageCms.getOpenProfile(filerelpath("profiles/SWOP.icc"))
 else:
 	in_cmyk_profile = ImageCms.getOpenProfile(args.input_cmyk_profile)
 
-#
+# 色空間を変換する関数を作成する
 if args.naive:
 	rgb_cmyk, cmyk_rgb = in_rgb_cmyk, in_cmyk_rgb = make_fake_transforms(args.black_start, args.gamma_correction)
 	gray_rgb = in_gray_rgb = lambda img: img.convert("RGB")
@@ -168,11 +148,11 @@ for i, f in enumerate(input_images):
 				target, same = img, True
 		# ハーフトーン化
 		if target.mode == "L":
-			halftone = halftone_grayscale_image(target, args.pitch, args.gray_angle, args.scale, args.blur, gray_keep_flag)
+			halftone = halftone_grayscale_image(target, args.pitch, args.gray_angle, args.scale, args.blur, args.keep_key)
 		elif target.mode == "RGB":
-			halftone = halftone_rgb_image(target, args.pitch, args.rgb_angles, args.scale, args.blur, rgb_keep_flags)
+			halftone = halftone_rgb_image(target, args.pitch, args.rgb_angles, args.scale, args.blur, (args.keep_red, args.keep_green, args.keep_blue))
 		elif target.mode == "CMYK":
-			halftone = halftone_cmyk_image(target, args.pitch, args.cmyk_angles, args.scale, args.blur, cmyk_keep_flags)
+			halftone = halftone_cmyk_image(target, args.pitch, args.cmyk_angles, args.scale, args.blur, (args.keep_cyan, args.keep_magenta, args.keep_yellow, args.keep_key))
 		# 目的の出力モードへ変換する
 		if halftone.mode == "L":
 			if args.output == "gray":
@@ -216,11 +196,13 @@ for i, f in enumerate(input_images):
 			path = filepath(args.directory, name, "png")
 		if not args.force:
 			path = altfilepath(path)
-		complete.save(path)
+		if not args.dry_run:
+			complete.save(path)
 	# エラーを報告する
 	except Exception as e:
 		eprint(f"{i + 1} / {n} Error: {f}")
 		eprint(e)
 	# 成功を報告する
 	else:
-		print(f"{i + 1} / {n} Done: {path}")
+		if not args.quiet:
+			print(f"{i + 1} / {n} Done: {path}")
