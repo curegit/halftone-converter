@@ -6,7 +6,7 @@ from modules.color import make_profile_transform, make_fake_transforms
 from modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_cmyk_image
 
 # コマンドライン引数をパース
-parser = ArgumentParser(allow_abbrev=False, description="Halftone Converter: an image converter to generate halftones.")
+parser = ArgumentParser(allow_abbrev=False, description="Halftone Converter: an image converter to generate halftones")
 parser.add_argument("images", metavar="FILE", nargs="+", help="describe input image files")
 parser.add_argument("-q", "--quiet", action="store_true", help="suppress non-error messages")
 parser.add_argument("-e", "--exit", action="store_true", help="stop immediately by an error even if jobs remain")
@@ -117,7 +117,7 @@ for i, f in enumerate(input_images):
 		elif img.mode == "RGBA":
 			img = img.convert("RGB")
 		if not img.mode in ["L", "RGB", "CMYK"]:
-			eprint("err") # TODO
+			raise ValueError("unsupported image type")
 		# ハーフトーンの色空間へ変換する
 		if img.mode == "L":
 			if args.mode == "gray":
@@ -206,4 +206,4 @@ for i, f in enumerate(input_images):
 	# 成功を報告する
 	else:
 		if not args.quiet:
-			print(f"{i + 1} / {n} Done: {path}")
+			print(f"{i + 1} / {n} Done: {f} -> {path}")
