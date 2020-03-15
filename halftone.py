@@ -1,3 +1,4 @@
+from glob import glob
 from argparse import ArgumentParser
 from PIL import Image, ImageCms
 from modules.args import positive, rate, filename, choice, intent
@@ -16,7 +17,7 @@ parser.add_argument("-d", "--directory", metavar="DIR", default=".", help="save 
 parser.add_argument("-P", "--prefix", type=filename, default="", help="specify a prefix string of output filenames")
 parser.add_argument("-S", "--suffix", type=filename, default="-halftone", help="specify a suffix string of output filenames")
 parser.add_argument("-E", "--enumerate", metavar="START", type=int, nargs="?", const=1, help="use consecutive numbers as output filenames")
-parser.add_argument("-p", "--pitch", "--interval", metavar="PX", type=positive, default=4, help="arrange halftone dots at intervals of PX pixels")
+parser.add_argument("-p", "--pitch", "--interval", metavar="PX", type=positive, default=4, help="arrange halftone dots at intervals of PX pixels in input images")
 parser.add_argument("-x", "-s", "--scale", type=positive, default=1, help="the scale factor of output images to input images")
 parser.add_argument("-b", "--blur", type=choice, choices=["none", "box", "gaussian"], default="gaussian", help="blur type to calculate the mean of pixels")
 parser.add_argument("-A", "--angle", "--gray-angle", metavar="DEG", dest="gray_angle", type=float, default=45, help="arrange dots by DEG degrees in Gray channel")
@@ -82,18 +83,18 @@ if args.naive:
 	gray_cmyk = in_gray_cmyk = lambda img: rgb_cmyk(gray_rgb(img))
 	cmyk_gray = in_cmyk_gray = lambda img: rgb_gray(cmyk_rgb(img))
 else:
-	rgb_cmyk = make_profile_transform((rgb_profile, cmyk_profile), ("RGB", "CMYK"), args.cmyk_intent, not args.ignore_embedded_profile)
-	cmyk_rgb = make_profile_transform((cmyk_profile, rgb_profile), ("CMYK", "RGB"), args.rgb_intent, not args.ignore_embedded_profile)
-	in_rgb_cmyk = make_profile_transform((in_rgb_profile, cmyk_profile), ("RGB", "CMYK"), args.cmyk_intent, not args.ignore_embedded_profile)
-	in_cmyk_rgb = make_profile_transform((in_cmyk_profile, rgb_profile), ("CMYK", "RGB"), args.rgb_intent, not args.ignore_embedded_profile)
-	gray_rgb = make_profile_transform((gray_profile, rgb_profile), ("L", "RGB"), args.rgb_intent, not args.ignore_embedded_profile)
-	rgb_gray = make_profile_transform((rgb_profile, gray_profile), ("RGB", "L"), args.gray_intent, not args.ignore_embedded_profile)
-	in_gray_rgb = make_profile_transform((in_gray_profile, rgb_profile), ("L", "RGB"), args.rgb_intent, not args.ignore_embedded_profile)
-	in_rgb_gray = make_profile_transform((in_rgb_profile, gray_profile), ("RGB", "L"), args.gray_intent, not args.ignore_embedded_profile)
-	gray_cmyk = make_profile_transform((gray_profile, cmyk_profile), ("L", "CMYK"), args.cmyk_intent, not args.ignore_embedded_profile)
-	cmyk_gray = make_profile_transform((cmyk_profile, gray_profile), ("CMYK", "L"), args.gray_intent, not args.ignore_embedded_profile)
-	in_gray_cmyk = make_profile_transform((in_gray_profile, cmyk_profile), ("L", "CMYK"), args.cmyk_intent, not args.ignore_embedded_profile)
-	in_cmyk_gray = make_profile_transform((in_cmyk_profile, gray_profile), ("CMYK", "L"), args.gray_intent, not args.ignore_embedded_profile)
+	rgb_cmyk = make_profile_transform((rgb_profile, cmyk_profile), ("RGB", "CMYK"), args.cmyk_intent, not args.ignore)
+	cmyk_rgb = make_profile_transform((cmyk_profile, rgb_profile), ("CMYK", "RGB"), args.rgb_intent, not args.ignore)
+	in_rgb_cmyk = make_profile_transform((in_rgb_profile, cmyk_profile), ("RGB", "CMYK"), args.cmyk_intent, not args.ignore)
+	in_cmyk_rgb = make_profile_transform((in_cmyk_profile, rgb_profile), ("CMYK", "RGB"), args.rgb_intent, not args.ignore)
+	gray_rgb = make_profile_transform((gray_profile, rgb_profile), ("L", "RGB"), args.rgb_intent, not args.ignore)
+	rgb_gray = make_profile_transform((rgb_profile, gray_profile), ("RGB", "L"), args.gray_intent, not args.ignore)
+	in_gray_rgb = make_profile_transform((in_gray_profile, rgb_profile), ("L", "RGB"), args.rgb_intent, not args.ignore)
+	in_rgb_gray = make_profile_transform((in_rgb_profile, gray_profile), ("RGB", "L"), args.gray_intent, not args.ignore)
+	gray_cmyk = make_profile_transform((gray_profile, cmyk_profile), ("L", "CMYK"), args.cmyk_intent, not args.ignore)
+	cmyk_gray = make_profile_transform((cmyk_profile, gray_profile), ("CMYK", "L"), args.gray_intent, not args.ignore)
+	in_gray_cmyk = make_profile_transform((in_gray_profile, cmyk_profile), ("L", "CMYK"), args.cmyk_intent, not args.ignore)
+	in_cmyk_gray = make_profile_transform((in_cmyk_profile, gray_profile), ("CMYK", "L"), args.gray_intent, not args.ignore)
 
 # 出力ディレクトリを作る
 mkdirp(args.directory)
@@ -105,9 +106,18 @@ if args.glob:
 		input_images += glob(i, recursive=True)
 else:
 	input_images = args.images
+n = len(input_images)
+
+# 処理対象のファイル数を表示
+if not args.quiet:
+	if n == 0:
+		print("No image found")
+	elif n == 1:
+		print("An image has been queued")
+	else:
+		print(f"{n} images have been queued")
 
 # 処理のメインループ
-n = len(input_images)
 for i, f in enumerate(input_images):
 	try:
 		# 画像を開く
@@ -182,14 +192,14 @@ for i, f in enumerate(input_images):
 			else:
 				complete = in_cmyk_rgb(halftone) if same else cmyk_rgb(halftone)
 		# 必要なら ICC プロファイルを廃棄する
-		if args.discard_profile:
+		if args.discard:
 			if complete.info.get("icc_profile"):
 				complete.info.pop("icc_profile")
 		# ファイルへ保存する
 		if args.enumerate is None:
 			name = args.prefix + purefilename(f) + args.suffix
 		else:
-			name = args.prefix + f"{arg.enumerate + i}" + args.suffix
+			name = args.prefix + f"{args.enumerate + i}" + args.suffix
 		if complete.mode == "CMYK" or args.tiff:
 			path = filepath(args.directory, name, "tiff")
 		else:
@@ -199,11 +209,11 @@ for i, f in enumerate(input_images):
 		complete.save(path)
 	# エラーを報告する
 	except Exception as e:
-		eprint(f"{i + 1} / {n} Error: {f}")
+		eprint(f"{i + 1}/{n} Error: {f}")
 		eprint(e)
 		if args.exit:
 			break
 	# 成功を報告する
 	else:
 		if not args.quiet:
-			print(f"{i + 1} / {n} Done: {f} -> {path}")
+			print(f"{i + 1}/{n} Done: {f} -> {path}")
