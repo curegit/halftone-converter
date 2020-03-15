@@ -1,10 +1,11 @@
+from sys import float_info
 from os.path import basename
 from PIL import ImageCms
 
 # 正の実数を受け入れる変換関数
 def positive(str):
 	value = float(str)
-	if value > 0:
+	if value >= float_info.epsilon:
 		return value
 	else:
 		raise ValueError()
