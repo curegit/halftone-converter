@@ -9,12 +9,13 @@ from modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_
 parser = ArgumentParser(allow_abbrev=False, description="Halftone Converter: an image converter to generate halftones.")
 parser.add_argument("images", metavar="FILE", nargs="+", help="describe input image files")
 parser.add_argument("-q", "--quiet", action="store_true", help="suppress non-error messages")
+parser.add_argument("-e", "--exit", action="store_true", help="stop immediately by an error even if jobs remain")
 parser.add_argument("-g", "--glob", action="store_true", help="interpret FILE values as glob patterns")
 parser.add_argument("-f", "--force", action="store_true", help="overwrite existing files by outputs")
 parser.add_argument("-d", "--directory", metavar="DIR", default=".", help="save output images in DIR directory")
 parser.add_argument("-P", "--prefix", type=filename, default="", help="specify a prefix string of output filenames")
 parser.add_argument("-S", "--suffix", type=filename, default="-halftone", help="specify a suffix string of output filenames")
-parser.add_argument("-e", "--enumerate", metavar="START", type=int, nargs="?", const=1, help="use consecutive numbers as output filenames")
+parser.add_argument("-E", "--enumerate", metavar="START", type=int, nargs="?", const=1, help="use consecutive numbers as output filenames")
 parser.add_argument("-p", "--pitch", "--interval", metavar="PX", type=positive, default=4, help="arrange halftone dots at intervals of PX pixels")
 parser.add_argument("-x", "-s", "--scale", type=positive, default=1, help="the scale factor of output images to input images")
 parser.add_argument("-b", "--blur", type=choice, choices=["none", "box", "gaussian"], default="gaussian", help="blur type to calculate the mean of pixels")
@@ -200,6 +201,8 @@ for i, f in enumerate(input_images):
 	except Exception as e:
 		eprint(f"{i + 1} / {n} Error: {f}")
 		eprint(e)
+		if args.exit:
+			break
 	# 成功を報告する
 	else:
 		if not args.quiet:
