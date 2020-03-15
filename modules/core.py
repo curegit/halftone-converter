@@ -130,7 +130,7 @@ def halftone_grayscale_image(image, pitch, angle=45, scale=1.0, blur=None, keep_
 		result.info.update(icc_profile=image.info.get("icc_profile"))
 	return result
 
-# RGBの画像を網点化した画像を返す
+# RGB の画像を網点化した画像を返す
 def halftone_rgb_image(image, pitch, angles=(15, 75, 30), scale=1.0, blur=None, keep_flags=(False, False, False), preserve_profile=True):
 	r, g, b = image.split()
 	red = halftone_grayscale_image(r, pitch, angles[0], scale, blur, keep_flags[0], False)
@@ -141,7 +141,7 @@ def halftone_rgb_image(image, pitch, angles=(15, 75, 30), scale=1.0, blur=None, 
 		halftone.info.update(icc_profile=image.info.get("icc_profile"))
 	return halftone
 
-# CMYKの画像を網点化した画像を返す
+# CMYK の画像を網点化した画像を返す
 def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=None, keep_flags=(False, False, False, False), preserve_profile=True):
 	c, m, y, k = image.split()
 	cyan = halftone_image(c, pitch, angles[0], scale, blur, keep_flags[0])

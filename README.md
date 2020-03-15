@@ -1,4 +1,4 @@
-# Halftoning
+# Halftone Converter
 
 ## Requirements
 
