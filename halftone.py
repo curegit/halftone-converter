@@ -38,8 +38,8 @@ parser.add_argument("-c", "--cmyk-intent", type=intent, choices=["per", "sat", "
 parser.add_argument("--ignore", "--ignore-embedded-profile", action="store_true", help="don't use ICC profiles embedded in input images")
 parser.add_argument("--discard", "--discard-profile", action="store_true", help="don't embed ICC profiles in output images")
 parser.add_argument("--naive", "--naive-transform", action="store_true", help="use approximate conversion algorithm (naive transform) instead of ICC-based transform")
-parser.add_argument("--gamma-correction", action="store_true", help="apply gamma correction for RGB-CMYK conversion when the naive transform is used")
-parser.add_argument("--key-from", metavar="RATE", type=rate, default=0.5, help="black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion")
+parser.add_argument("--gamma-correction", action="store_true", help="apply gamma correction of sRGB for RGB-CMYK conversion when the naive transform is used")
+parser.add_argument("--key-from", metavar="RATE", type=rate, default=0.5, help="black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used")
 parser.add_argument("--keep-red", action="store_true", help="don't convert R channels to halftones")
 parser.add_argument("--keep-green", action="store_true", help="don't convert G channels to halftones")
 parser.add_argument("--keep-blue", action="store_true", help="don't convert B channels to halftones")
@@ -111,11 +111,11 @@ n = len(input_images)
 # 処理対象のファイル数を表示
 if not args.quiet:
 	if n == 0:
-		print("No image found")
+		print("No image found.")
 	elif n == 1:
-		print("An image has been queued")
+		print("An image has been queued.")
 	else:
-		print(f"{n} images have been queued")
+		print(f"{n} images have been queued.")
 
 # 処理のメインループ
 for i, f in enumerate(input_images):
@@ -209,11 +209,11 @@ for i, f in enumerate(input_images):
 		complete.save(path)
 	# エラーを報告する
 	except Exception as e:
-		eprint(f"{i + 1}/{n} Error: {f}")
+		eprint(f"{i + 1}/{n} error: {f}")
 		eprint(e)
 		if args.exit:
 			break
 	# 成功を報告する
 	else:
 		if not args.quiet:
-			print(f"{i + 1}/{n} Done: {f} -> {path}")
+			print(f"{i + 1}/{n} done: {f} -> {path}")
