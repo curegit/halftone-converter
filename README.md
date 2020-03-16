@@ -24,16 +24,16 @@ python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
                     FILE [FILE ...]
 ```
 
-### positional arguments
+### Positional arguments
 
 #### FILE
 
 describe input image files, can be multiple
 
 Input images' formats are limited to what Pillow can read.
-Also, their color spaces must be L (grayscale), LA (grayscale with alpha), RGB, RGBA or CMYK.
+Also, their color spaces must be L (grayscale), LA (grayscale with alpha), RGB, RGBA, or CMYK.
 
-### optional arguments
+### Optional arguments
 
 #### -h, --help
 
@@ -41,11 +41,13 @@ show the help message and exit
 
 #### -q, --quiet
 
-suppress non-error messages
+suppress non-error messages (e.g. progress report)
 
 #### -e, --exit
 
 stop immediately by an error even if jobs remain
+
+By default, it skips failed jobs and starts the next jobs.
 
 #### -g, --glob
 
@@ -58,9 +60,13 @@ Pattern `**` matches any files and zero or more directories recursively.
 
 overwrite existing files by outputs
 
+By default, an alternate filename will be used if the original filename conflicts.
+
 #### -d DIR, --directory DIR
 
 save output images in DIR directory
+
+The directory will be created automatically if it does not exist.
 
 #### -P PREFIX, --prefix PREFIX
 
