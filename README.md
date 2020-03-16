@@ -84,17 +84,27 @@ specify a suffix string of output filenames
 
 use consecutive numbers as output filenames
 
+It counts up by one from START.
+The default START is 1.
+
 #### -p PX, --pitch PX, --interval PX
 
 arrange halftone dots at intervals of `PX` pixels in input images
+
+Change this value for desired results.
+The default value is 4.0.
 
 #### -x SCALE, -s SCALE, --scale SCALE
 
 the scale factor of output images to input images
 
+The default value is 1.0.
+
 #### -b {none,box,gaussian}, --blur {none,box,gaussian}
 
 blur type to calculate the mean of pixels
+
+The default is `gaussian`.
 
 #### -A DEG, --angle DEG, --gray-angle DEG
 
@@ -112,13 +122,21 @@ arrange dots by `DEG` degrees in each CMYK channels
 
 color space type to generate halftones
 
+The default is `auto`.
+It means that Gray images will be Gray halftones, and colored images will be CMYK halftones.
+
 #### -o {auto,gray,rgb,cmyk}, --output {auto,gray,rgb,cmyk}
 
 color space type to save output images
 
+The default is `auto`.
+It means that Gray images will be saved as Gray images, and colored images will be saved as RGB images.
+
 #### -T, --tiff, --out-tiff
 
 save TIFF images instead of PNG images
+
+CMYK images will be saved in TIFF regardless of this option.
 
 #### -G GRAY_ICC_FILE, --input-gray-profile GRAY_ICC_FILE
 
