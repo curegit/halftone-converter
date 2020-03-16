@@ -4,9 +4,9 @@ An image converter to generate halftone images of high quality
 
 ## Requirements
 
-This application can be run on any OS by Python3.
+This application can be run by Python3 on any OS.
 
-- Python 3.6+
+- Python 3.7+
 - NumPy
 - PyCairo
 - Pillow
@@ -35,7 +35,7 @@ python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
 describe input image files, can be multiple
 
 Input images' formats are limited to what Pillow can read.
-Also, their color spaces must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, or CMYK.
+Also, their color spaces must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF) or CMYK.
 
 ### Optional arguments
 
