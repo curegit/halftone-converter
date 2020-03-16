@@ -13,6 +13,9 @@ This application can be run by Python3 on any OS.
 
 ## Usage
 
+The application takes image files as input and outputs halftones as image files.
+It has general command line interface shown as below.
+
 ```sh
 python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
                     [-E [START]] [-p PX] [-x SCALE] [-b {none,box,gaussian}]
@@ -45,7 +48,7 @@ show the help message and exit
 
 #### -q, --quiet
 
-suppress non-error messages (e.g. progress report)
+suppress non-error messages
 
 #### -e, --exit
 
@@ -136,7 +139,7 @@ It means that Gray images will be saved as Gray images, and colored images will 
 
 save TIFF images instead of PNG images
 
-CMYK images will be saved in TIFF regardless of this option.
+CMYK images will always be saved in TIFF regardless of this option.
 
 #### -G GRAY_ICC_FILE, --input-gray-profile GRAY_ICC_FILE
 
