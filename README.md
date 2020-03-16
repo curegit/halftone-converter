@@ -30,6 +30,9 @@ python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
 
 describe input image files, can be multiple
 
+Input images' formats are limited to what Pillow can read.
+Also, their color spaces must be L (grayscale), LA (grayscale with alpha), RGB, RGBA or CMYK.
+
 ### optional arguments
 
 #### -h, --help
@@ -46,10 +49,10 @@ stop immediately by an error even if jobs remain
 
 #### -g, --glob
 
-interpret FILE values as glob patterns (e.g. *.png, **/*.jpg)
+interpret FILE values as glob patterns (e.g. `*.png`, `**/*.jpg`)
 
-Use this option if the shell's wildcard expansion is not available.
-`**` matches any files and zero or more directories recursively.
+Use this option if the shell's wildcard expansion is not available or enough.
+Pattern `**` matches any files and zero or more directories recursively.
 
 #### -f, --force
 
