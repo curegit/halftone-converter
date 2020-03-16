@@ -7,7 +7,7 @@ from modules.color import make_profile_transform, make_fake_transforms
 from modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_cmyk_image
 
 # コマンドライン引数をパース
-parser = ArgumentParser(allow_abbrev=False, description="Halftone Converter: an image converter to generate halftones")
+parser = ArgumentParser(allow_abbrev=False, description="Halftone Converter: an image converter to generate halftone images")
 parser.add_argument("images", metavar="FILE", nargs="+", help="describe input image files")
 parser.add_argument("-q", "--quiet", action="store_true", help="suppress non-error messages")
 parser.add_argument("-e", "--exit", action="store_true", help="stop immediately by an error even if jobs remain")
