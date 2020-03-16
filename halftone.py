@@ -111,11 +111,11 @@ n = len(input_images)
 # 処理対象のファイル数を表示
 if not args.quiet:
 	if n == 0:
-		print("No image found.")
+		print("No image found")
 	elif n == 1:
-		print("An image has been queued.")
+		print("An image has been queued")
 	else:
-		print(f"{n} images have been queued.")
+		print(f"{n} images have been queued")
 
 # 処理のメインループ
 for i, f in enumerate(input_images):
