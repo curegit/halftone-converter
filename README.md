@@ -1,6 +1,10 @@
 # Halftone Converter
 
+An image converter to generate halftone images of high quality
+
 ## Requirements
+
+This application can be run on any OS by Python3.
 
 - Python 3.6+
 - NumPy
@@ -31,7 +35,7 @@ python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
 describe input image files, can be multiple
 
 Input images' formats are limited to what Pillow can read.
-Also, their color spaces must be L (grayscale), LA (grayscale with alpha), RGB, RGBA, or CMYK.
+Also, their color spaces must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, or CMYK.
 
 ### Optional arguments
 
@@ -45,13 +49,13 @@ suppress non-error messages (e.g. progress report)
 
 #### -e, --exit
 
-stop immediately by an error even if jobs remain
+stop the program immediately by an error even if jobs remain
 
 By default, it skips failed jobs and starts the next jobs.
 
 #### -g, --glob
 
-interpret FILE values as glob patterns (e.g. `*.png`, `**/*.jpg`)
+interpret `FILE` values as glob patterns (e.g. `*.png`, `**/*.jpg`)
 
 Use this option if the shell's wildcard expansion is not available or enough.
 Pattern `**` matches any files and zero or more directories recursively.
@@ -64,7 +68,7 @@ By default, an alternate filename will be used if the original filename conflict
 
 #### -d DIR, --directory DIR
 
-save output images in DIR directory
+save output images in `DIR` directory
 
 The directory will be created automatically if it does not exist.
 
@@ -82,7 +86,7 @@ use consecutive numbers as output filenames
 
 #### -p PX, --pitch PX, --interval PX
 
-arrange halftone dots at intervals of PX pixels in input images
+arrange halftone dots at intervals of `PX` pixels in input images
 
 #### -x SCALE, -s SCALE, --scale SCALE
 
@@ -94,15 +98,15 @@ blur type to calculate the mean of pixels
 
 #### -A DEG, --angle DEG, --gray-angle DEG
 
-arrange dots by DEG degrees in Gray channel
+arrange dots by `DEG` degrees in Gray channel
 
 #### -t DEG DEG DEG, --Angles DEG DEG DEG, --rgb-angles DEG DEG DEG
 
-arrange dots by DEG degrees in each RGB channels
+arrange dots by `DEG` degrees in each RGB channels
 
 #### -a DEG DEG DEG DEG, --angles DEG DEG DEG DEG, --cmyk-angles DEG DEG DEG DEG
 
-arrange dots by DEG degrees in each CMYK channels
+arrange dots by `DEG` degrees in each CMYK channels
 
 #### -m {auto,gray,rgb,cmyk}, --mode {auto,gray,rgb,cmyk}
 
