@@ -28,13 +28,13 @@ python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
 
 #### FILE
 
-describe input image files
+describe input image files, can be multiple
 
 ### optional arguments
 
 #### -h, --help
 
-show this help message and exit
+show the help message and exit
 
 #### -q, --quiet
 
@@ -46,7 +46,10 @@ stop immediately by an error even if jobs remain
 
 #### -g, --glob
 
-interpret FILE values as glob patterns
+interpret FILE values as glob patterns (e.g. *.png, **/*.jpg)
+
+Use this option if the shell's wildcard expansion is not available.
+`**` matches any files and zero or more directories recursively.
 
 #### -f, --force
 
@@ -70,8 +73,7 @@ use consecutive numbers as output filenames
 
 #### -p PX, --pitch PX, --interval PX
 
-arrange halftone dots at intervals of PX pixels in
-input images
+arrange halftone dots at intervals of PX pixels in input images
 
 #### -x SCALE, -s SCALE, --scale SCALE
 
@@ -151,16 +153,15 @@ don't embed ICC profiles in output images
 
 #### --naive, --naive-transform
 
-use approximate conversion algorithm (naive transform)
-instead of ICC-based transform
+use approximate conversion algorithm (naive transform) instead of ICC-based transform
 
-#### --gamma-correction    apply gamma correction of sRGB for RGB-CMYK conversion
+#### --gamma-correction
 
-when the naive transform is used
+apply gamma correction of sRGB for RGB-CMYK conversion when the naive transform is used
 
-#### --key-from RATE       black ingredient threshold within 0.0-1.0 for RGB-CMYK
+#### --key-from RATE
 
-conversion when the naive transform is used
+black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used
 
 #### --keep-red
 
