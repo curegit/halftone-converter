@@ -104,6 +104,7 @@ if args.glob:
 	input_images = []
 	for i in args.images:
 		input_images += glob(i, recursive=True)
+	input_images = list(dict.fromkeys(input_images))
 else:
 	input_images = args.images
 n = len(input_images)
