@@ -2,6 +2,12 @@
 
 An image converter to generate halftone images of high quality
 
+## Features
+
+- Make your images halftones easily
+- High quality rendering by Cairo graphics library
+- Color space transform with ICC profiles
+
 ## Requirements
 
 This application can be run by Python3 on any OS.
@@ -14,7 +20,7 @@ This application can be run by Python3 on any OS.
 ## Usage
 
 The application takes image files as input and outputs halftones as image files.
-It has general command line interface shown as below.
+It has command line interface shown as below.
 
 ```sh
 python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
@@ -38,7 +44,7 @@ python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
 describe input image files, can be multiple
 
 Input images' formats are limited to what Pillow can read.
-Also, their color spaces must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF) or CMYK.
+Also, their color spaces must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF), or CMYK.
 
 ### Optional arguments
 
@@ -87,8 +93,8 @@ specify a suffix string of output filenames
 
 use consecutive numbers as output filenames
 
-It counts up by one from START.
-The default START is 1.
+It counts up by one from `START`.
+The default `START` is 1.
 
 #### -p PX, --pitch PX, --interval PX
 
