@@ -29,9 +29,9 @@ def purefilename(path):
 	return tail
 
 # パスにファイルがすでに存在したら別のファイル名にしたパスを返す
-def altfilepath(path, prefix="_"):
+def altfilepath(path, suffix="_"):
 	while os.path.lexists(path):
 		root, ext = os.path.splitext(path)
 		head, tail = os.path.split(root)
-		path = os.path.join(head, prefix + tail) + ext
+		path = os.path.join(head, tail + suffix) + ext
 	return path
