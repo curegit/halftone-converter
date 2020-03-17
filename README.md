@@ -6,6 +6,7 @@ An image converter to generate halftone images of high quality
 
 - Make your images halftones easily
 - High quality rendering by Cairo graphics library
+- Halftones of 3 color types – Gray, RGB and CMYK
 - Color space transform with ICC profiles
 
 ![Colorful Play Balls](images/colorful-play-balls.png)
@@ -39,16 +40,16 @@ python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
                     FILE [FILE ...]
 ```
 
-### Positional arguments
+### Positional Arguments
 
 #### FILE
 
-describe input image files, can be multiple
+describe input image files (required), can be multiple
 
 Input images' formats are limited to what Pillow can read.
 Also, their color spaces must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF), or CMYK.
 
-### Optional arguments
+### Optional Arguments
 
 #### -h, --help
 
