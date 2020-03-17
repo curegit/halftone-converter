@@ -5,8 +5,8 @@ An image converter to generate halftone images of high quality
 ## Features
 
 - Make your images halftones easily
-- High quality rendering by Cairo graphics library
-- Halftones of 3 color types – Gray, RGB and CMYK
+- High-quality rendering by Cairo graphics library
+- Halftones of 3 color types – Gray, RGB, and CMYK
 - Color space transform with ICC profiles
 
 ![Colorful Play Balls](images/colorful-play-balls.png)
