@@ -8,6 +8,8 @@ An image converter to generate halftone images of high quality
 - High quality rendering by Cairo graphics library
 - Color space transform with ICC profiles
 
+![Colorful Play Balls](images/colorful-play-balls.png)
+
 ## Requirements
 
 This application can be run by Python3 on any OS.

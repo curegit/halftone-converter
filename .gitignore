@@ -10,6 +10,8 @@
 *.tiff
 *.tga
 *.bmp
+!images/*.png
+!images/*.tiff
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
