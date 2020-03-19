@@ -208,7 +208,7 @@ for i, f in enumerate(input_images):
 		else:
 			path = filepath(args.directory, name, "png")
 		if not args.force:
-			path = altfilepath(path)
+			path = altfilepath(path, suffix="+")
 		complete.save(path)
 	# エラーを報告する
 	except Exception as e:
