@@ -19,7 +19,7 @@ def filepath(dirpath, filename, ext):
 # 呼び出し元のスクリプトからの相対パスを構築する
 def filerelpath(relpath):
 	f = inspect.stack()[1].filename
-	d = os.getcwd() if f == "<stdin>" else os.path.dirname(f)
+	d = os.path.dirname(f)
 	return os.path.join(d, relpath)
 
 # 拡張子を含まないファイル名を返す
