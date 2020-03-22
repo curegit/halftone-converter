@@ -32,7 +32,7 @@ python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
                     [-m {auto,gray,rgb,cmyk}] [-o {auto,gray,rgb,cmyk}] [-T]
                     [-G GRAY_ICC_FILE] [-I RGB_ICC_FILE] [-M CMYK_ICC_FILE]
                     [-L GRAY_ICC_FILE] [-l {per,sat,rel,abs,0,1,2,3}]
-                    [-R RGB_ICC_FILE]  [-r {per,sat,rel,abs,0,1,2,3}]
+                    [-R RGB_ICC_FILE] [-r {per,sat,rel,abs,0,1,2,3}]
                     [-C CMYK_ICC_FILE] [-c {per,sat,rel,abs,0,1,2,3}]
                     [--ignore] [--discard] [--naive] [--gamma-correction]
                     [--key-from RATE] [--keep-red] [--keep-green] [--keep-blue]
@@ -69,7 +69,7 @@ By default, it skips failed jobs and starts the next jobs.
 
 interpret `FILE` values as glob patterns (e.g. `*.png`, `**/*.jpg`)
 
-Use this option if the shell's wildcard expansion is not available or enough.
+Use this option if the shell's wildcard expansion is not available and enough.
 Pattern `**` matches any files and zero or more directories recursively.
 
 #### -f, --force
