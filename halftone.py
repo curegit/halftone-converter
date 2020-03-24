@@ -113,7 +113,7 @@ n = len(input_images)
 # 処理対象のファイル数を表示
 if not args.quiet:
 	if n == 0:
-		print("No files found")
+		print("No files matched")
 	elif n == 1:
 		print("A file has been queued")
 	else:
