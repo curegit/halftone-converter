@@ -1,4 +1,5 @@
 from glob import glob
+from os.path import isfile
 from argparse import ArgumentParser
 from PIL import Image, ImageCms
 from modules.args import positive, rate, filename, choice, intent
@@ -103,7 +104,7 @@ mkdirp(args.directory)
 if args.glob:
 	input_images = []
 	for i in args.images:
-		input_images += glob(i, recursive=True)
+		input_images += [f for f in glob(i, recursive=True) if isfile(f)]
 	input_images = list(dict.fromkeys(input_images))
 else:
 	input_images = args.images
