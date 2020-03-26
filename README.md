@@ -236,7 +236,11 @@ don't convert K channels to halftones
 
 ## Gallery
 
+### RGB
+
 ![Blue Hyacinths](images/blue-hyacinths.png)
+
+### Gray
 
 ![Chevrolet Opala 87](images/chevrolet-opala.png)
 
