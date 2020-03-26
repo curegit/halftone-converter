@@ -234,6 +234,12 @@ don't convert Y channels to halftones
 
 don't convert K channels to halftones
 
+## Gallery
+
+![Blue Hyacinths](images/blue-hyacinths.png)
+
+![Chevrolet Opala 87](images/chevrolet-opala.png)
+
 ## Credits
 
 This application contains some ICC profiles to convert images between different color spaces.
