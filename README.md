@@ -20,6 +20,12 @@ This application can be run by Python3 on any OS.
 - PyCairo
 - Pillow
 
+### Install PyCairo on macOS
+
+```sh
+brew install py3cairo
+```
+
 ## Usage
 
 The application takes image files as input and outputs halftones as image files.
