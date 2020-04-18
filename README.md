@@ -53,7 +53,7 @@ python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
 describe input image files (required), can be multiple
 
 Input images' formats are limited to what Pillow can read.
-Also, their color spaces must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF), or CMYK.
+Also, their color spaces must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, transparent images), or CMYK.
 
 ### Optional Arguments
 
