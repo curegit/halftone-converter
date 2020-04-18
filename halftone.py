@@ -129,7 +129,8 @@ for i, f in enumerate(input_images):
 		elif img.mode == "RGBA":
 			img = img.convert("RGB")
 		elif img.mode == "P":
-			img = img.convert("RGB")
+			bg = Image.new("RGBA", img.size, "White")
+			img = Image.alpha_composite(bg, img.convert("RGBA")).convert("RGB")
 		if not img.mode in ["L", "RGB", "CMYK"]:
 			raise ValueError("unsupported image type")
 		# ハーフトーンの色空間へ変換する
