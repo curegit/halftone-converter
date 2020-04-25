@@ -246,6 +246,10 @@ don't convert K channels to halftones
 
 ![Blue Hyacinths](images/blue-hyacinths.png)
 
+### CMYK
+
+![Todai Ramen](images/lighthouse-ramen.png)
+
 ### Gray
 
 ![Chevrolet Opala 87](images/chevrolet-opala.png)
