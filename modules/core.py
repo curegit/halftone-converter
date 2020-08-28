@@ -93,8 +93,9 @@ def halftone_dots(image, pitch, angle, blur):
 	valid_uvs = [p for p in product(range(floor(lower_u), ceil(upper_u) + 1), range(floor(lower_v), ceil(upper_v) + 1)) if boundary(*p)]
 	for u, v in valid_uvs:
 		x, y = inverse_transform(u, v)
-		color = blurred.getpixel((min(max(x, 0), image.width-1), min(max(y, 0), image.height-1)))
-		yield x, y, color
+		if -pitch < x < image.width + pitch and -pitch < y < image.height + pitch:
+			color = blurred.getpixel((min(max(x, 0), blurred.width - 1), min(max(y, 0), blurred.height - 1)))
+			yield x, y, color
 
 # シングルバンドの画像を網点化した画像を返す
 def halftone_image(image, pitch, angle, scale, blur=None, keep_flag=False):
