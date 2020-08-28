@@ -39,9 +39,9 @@ python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
                     [-G GRAY_ICC_FILE] [-I RGB_ICC_FILE] [-M CMYK_ICC_FILE]
                     [-L GRAY_ICC_FILE] [-l {per,sat,rel,abs,0,1,2,3}]
                     [-R RGB_ICC_FILE] [-r {per,sat,rel,abs,0,1,2,3}]
-                    [-C CMYK_ICC_FILE] [-c {per,sat,rel,abs,0,1,2,3}]
+                    [-C CMYK_ICC_FILE] [-c {per,sat,rel,abs,0,1,2,3}] [-H]
                     [--ignore] [--discard] [--naive] [--gamma-correction]
-                    [--key-from RATE] [--keep-red] [--keep-green] [--keep-blue]
+                    [--key RATE] [-K] [--keep-red] [--keep-green] [--keep-blue]
                     [--keep-cyan] [--keep-magenta] [--keep-yellow] [--keep-key]
                     FILE [FILE ...]
 ```
@@ -192,6 +192,13 @@ specify ICC profile for transform to CMYK images
 
 rendering intent for transform to CMYK images
 
+#### -H, --allow-huge
+
+disable the limitation of input image size
+
+Be careful.
+This option may make DoS attacks possible.
+
 #### --ignore, --ignore-embedded-profile
 
 don't use ICC profiles embedded in input images
@@ -208,9 +215,15 @@ use approximate conversion algorithm (naive transform) instead of ICC-based tran
 
 apply gamma correction of sRGB for RGB-CMYK conversion when the naive transform is used
 
-#### --key-from RATE
+#### --key RATE, --key-from RATE
 
 black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used
+
+#### -K, --keep-all
+
+don't convert any channels to halftones
+
+This is useful for looking color space transform.
 
 #### --keep-red
 
