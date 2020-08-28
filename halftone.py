@@ -42,6 +42,7 @@ parser.add_argument("--discard", "--discard-profile", action="store_true", help=
 parser.add_argument("--naive", "--naive-transform", action="store_true", help="use approximate conversion algorithm (naive transform) instead of ICC-based transform")
 parser.add_argument("--gamma-correction", action="store_true", help="apply gamma correction of sRGB for RGB-CMYK conversion when the naive transform is used")
 parser.add_argument("--key-from", metavar="RATE", type=rate, default=0.5, help="black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used")
+parser.add_argument("-K", "--keep-all", action="store_true", help="don't convert any channels to halftones")
 parser.add_argument("--keep-red", action="store_true", help="don't convert R channels to halftones")
 parser.add_argument("--keep-green", action="store_true", help="don't convert G channels to halftones")
 parser.add_argument("--keep-blue", action="store_true", help="don't convert B channels to halftones")
@@ -50,6 +51,16 @@ parser.add_argument("--keep-magenta", action="store_true", help="don't convert M
 parser.add_argument("--keep-yellow", action="store_true", help="don't convert Y channels to halftones")
 parser.add_argument("--keep-key", action="store_true", help="don't convert K channels to halftones")
 args = parser.parse_args()
+
+# keep フラグの一括セット
+if args.keep_all:
+	args.keep_red = True
+	args.keep_green = True
+	args.keep_blue = True
+	args.keep_cyan = True
+	args.keep_magenta = True
+	args.keep_yellow = True
+	args.keep_key = True
 
 # ICC プロファイルを読み込む
 if args.gray_profile is None:
