@@ -36,6 +36,7 @@ parser.add_argument("-R", "--rgb-profile", metavar="RGB_ICC_FILE", help="specify
 parser.add_argument("-r", "--rgb-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default=1, help="rendering intent for transform to RGB images")
 parser.add_argument("-C", "--cmyk-profile", metavar="CMYK_ICC_FILE", help="specify ICC profile for transform to CMYK images")
 parser.add_argument("-c", "--cmyk-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default=1, help="rendering intent for transform to CMYK images")
+parser.add_argument("-H", "--allow-huge", action="store_true", help="disable the limitation of input image size")
 parser.add_argument("--ignore", "--ignore-embedded-profile", action="store_true", help="don't use ICC profiles embedded in input images")
 parser.add_argument("--discard", "--discard-profile", action="store_true", help="don't embed ICC profiles in output images")
 parser.add_argument("--naive", "--naive-transform", action="store_true", help="use approximate conversion algorithm (naive transform) instead of ICC-based transform")
@@ -99,6 +100,10 @@ else:
 
 # 出力ディレクトリを作る
 mkdirp(args.directory)
+
+# ピクセル数の制限を無くす
+if args.allow_huge:
+	Image.MAX_IMAGE_PIXELS = None
 
 # 処理対象ファイルをリスティング
 if args.glob:
