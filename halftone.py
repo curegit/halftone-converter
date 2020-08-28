@@ -41,7 +41,7 @@ parser.add_argument("--ignore", "--ignore-embedded-profile", action="store_true"
 parser.add_argument("--discard", "--discard-profile", action="store_true", help="don't embed ICC profiles in output images")
 parser.add_argument("--naive", "--naive-transform", action="store_true", help="use approximate conversion algorithm (naive transform) instead of ICC-based transform")
 parser.add_argument("--gamma-correction", action="store_true", help="apply gamma correction of sRGB for RGB-CMYK conversion when the naive transform is used")
-parser.add_argument("--key-from", metavar="RATE", type=rate, default=0.5, help="black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used")
+parser.add_argument("--key", "--key-from", metavar="RATE", type=rate, default=0.5, help="black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used")
 parser.add_argument("-K", "--keep-all", action="store_true", help="don't convert any channels to halftones")
 parser.add_argument("--keep-red", action="store_true", help="don't convert R channels to halftones")
 parser.add_argument("--keep-green", action="store_true", help="don't convert G channels to halftones")
