@@ -18,8 +18,15 @@ def rate(str):
 	else:
 		raise ValueError()
 
-# ファイル名を受け入れる変換関数
-def filename(str):
+# 非空列を受け入れる変換関数
+def nonempty(str):
+	if str:
+		return str
+	else:
+		raise ValueError()
+
+# ファイル名の一部を受け入れる変換関数
+def filenameseg(str):
 	if str == basename(str):
 		return str
 	else:

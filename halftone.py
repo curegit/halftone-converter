@@ -2,21 +2,21 @@ from glob import glob
 from os.path import isfile
 from argparse import ArgumentParser
 from PIL import Image, ImageCms
-from modules.args import positive, rate, filename, choice, intent
+from modules.args import positive, rate, nonempty, filenameseg, choice, intent
 from modules.util import eprint, mkdirp, filepath, filerelpath, purefilename, altfilepath
 from modules.color import make_profile_transform, make_fake_transforms
 from modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_cmyk_image
 
 # コマンドライン引数をパース
 parser = ArgumentParser(allow_abbrev=False, description="Halftone Converter: an image converter to generate halftone images")
-parser.add_argument("images", metavar="FILE", nargs="+", help="describe input image files")
+parser.add_argument("images", metavar="FILE", type=nonempty, nargs="+", help="describe input image files")
 parser.add_argument("-q", "--quiet", action="store_true", help="suppress non-error messages")
 parser.add_argument("-e", "--exit", action="store_true", help="stop immediately by an error even if jobs remain")
 parser.add_argument("-g", "--glob", action="store_true", help="interpret FILE values as glob patterns")
 parser.add_argument("-f", "--force", action="store_true", help="overwrite existing files by outputs")
-parser.add_argument("-d", "--directory", metavar="DIR", default=".", help="save output images in DIR directory")
-parser.add_argument("-P", "--prefix", type=filename, default="", help="specify a prefix string of output filenames")
-parser.add_argument("-S", "--suffix", type=filename, default="-halftone", help="specify a suffix string of output filenames")
+parser.add_argument("-d", "--directory", metavar="DIR", type=nonempty, default=".", help="save output images in DIR directory")
+parser.add_argument("-P", "--prefix", type=filenameseg, default="", help="specify a prefix string of output filenames")
+parser.add_argument("-S", "--suffix", type=filenameseg, default="-halftone", help="specify a suffix string of output filenames")
 parser.add_argument("-E", "--enumerate", metavar="START", type=int, nargs="?", const=1, help="use consecutive numbers as output filenames")
 parser.add_argument("-p", "--pitch", "--interval", metavar="PX", type=positive, default=4, help="arrange halftone dots at intervals of PX pixels in input images")
 parser.add_argument("-x", "-s", "--scale", type=positive, default=1, help="the scale factor of output images to input images")
@@ -27,14 +27,14 @@ parser.add_argument("-a", "--angles", "--cmyk-angles", metavar="DEG", dest="cmyk
 parser.add_argument("-m", "--mode", type=choice, choices=["auto", "gray", "rgb", "cmyk"], default="auto", help="color space type to generate halftones")
 parser.add_argument("-o", "--output", type=choice, choices=["auto", "gray", "rgb", "cmyk"], default="auto", help="color space type to save output images")
 parser.add_argument("-T", "--tiff", "--out-tiff", action="store_true", help="save TIFF images instead of PNG images")
-parser.add_argument("-G", "--input-gray-profile", metavar="GRAY_ICC_FILE", help="specify ICC profile for input Gray images")
-parser.add_argument("-I", "--input-rgb-profile", metavar="RGB_ICC_FILE", help="specify ICC profile for input RGB images")
-parser.add_argument("-M", "--input-cmyk-profile", metavar="CMYK_ICC_FILE", help="specify ICC profile for input CMYK images")
-parser.add_argument("-L", "--gray-profile", metavar="GRAY_ICC_FILE", help="specify ICC profile for transform to Gray images")
+parser.add_argument("-G", "--input-gray-profile", metavar="GRAY_ICC_FILE", type=nonempty, help="specify ICC profile for input Gray images")
+parser.add_argument("-I", "--input-rgb-profile", metavar="RGB_ICC_FILE", type=nonempty, help="specify ICC profile for input RGB images")
+parser.add_argument("-M", "--input-cmyk-profile", metavar="CMYK_ICC_FILE", type=nonempty, help="specify ICC profile for input CMYK images")
+parser.add_argument("-L", "--gray-profile", metavar="GRAY_ICC_FILE", type=nonempty, help="specify ICC profile for transform to Gray images")
 parser.add_argument("-l", "--gray-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default=1, help="rendering intent for transform to Gray images")
-parser.add_argument("-R", "--rgb-profile", metavar="RGB_ICC_FILE", help="specify ICC profile for transform to RGB images")
+parser.add_argument("-R", "--rgb-profile", metavar="RGB_ICC_FILE", type=nonempty, help="specify ICC profile for transform to RGB images")
 parser.add_argument("-r", "--rgb-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default=1, help="rendering intent for transform to RGB images")
-parser.add_argument("-C", "--cmyk-profile", metavar="CMYK_ICC_FILE", help="specify ICC profile for transform to CMYK images")
+parser.add_argument("-C", "--cmyk-profile", metavar="CMYK_ICC_FILE", type=nonempty, help="specify ICC profile for transform to CMYK images")
 parser.add_argument("-c", "--cmyk-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default=1, help="rendering intent for transform to CMYK images")
 parser.add_argument("-H", "--allow-huge", action="store_true", help="disable the limitation of input image size")
 parser.add_argument("--ignore", "--ignore-embedded-profile", action="store_true", help="don't use ICC profiles embedded in input images")
