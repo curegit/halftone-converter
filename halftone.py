@@ -131,9 +131,9 @@ if not args.quiet:
 	if n == 0:
 		print("No files matched")
 	elif n == 1:
-		print("A file has been queued")
+		print("One processing target has been queued")
 	else:
-		print(f"{n} files have been queued")
+		print(f"{n} processing targets have been queued")
 
 # 処理のメインループ
 for i, f in enumerate(input_images):
