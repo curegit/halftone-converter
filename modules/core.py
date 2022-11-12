@@ -22,9 +22,9 @@ def make_occupancy(pitch):
 def bisection(f, x1, x2, eps):
 	while True:
 		x = (x1 + x2) / 2
-		y = f(x)
-		if abs(y) < eps:
+		if abs(x1 - x2) <= eps + eps * abs(x):
 			return x
+		y = f(x)
 		if f(x1) * y > 0:
 			x1 = x
 		else:
@@ -43,7 +43,7 @@ def radius_table(pitch, depth):
 	while color < depth - 1:
 		f = make_occupancy(pitch)
 		y = lambda x: f(x) - occupancy
-		r = bisection(y, r, rmax, float_info.epsilon * 2)
+		r = bisection(y, r, rmax, float_info.epsilon)
 		yield r
 		color += 1
 		occupancy = color / (depth - 1)
