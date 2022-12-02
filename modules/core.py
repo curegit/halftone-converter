@@ -1,3 +1,4 @@
+import numpy as np
 from sys import float_info
 from itertools import product
 from math import floor, ceil, sqrt, sin, cos, acos, pi
@@ -78,6 +79,27 @@ def make_transforms(pitch, angle, origin=(0.0, 0.0)):
 		return x, y
 	return transform, inverse_transform
 
+def make_getpixel(image):
+	def getpixel(x, y):
+		pass
+
+def resample_nearest(image, x, y):
+	return image.getpixel((floor(min(max(x, 0), image.width - 1)), floor(min(max(y, 0), image.height - 1))))
+
+def resample_average(image, x, y):
+	pass
+
+def make_lanczos_resampler(n=2):
+	def resample_lanczos(image, x, y):
+		pass
+	return resample_lanczos
+
+def resample_spline16(image, x, y):
+	pass
+
+def resample_spline36(image, x, y):
+	pass
+
 # シングルバンドの画像から網点の位置と階調のイテレータを返す
 def halftone_dots(image, pitch, angle, blur):
 	center = image.width / 2, image.height / 2
@@ -89,12 +111,16 @@ def halftone_dots(image, pitch, angle, blur):
 	lower_v = min([v for u, v in uv_bounds])
 	upper_v = max([v for u, v in uv_bounds])
 	boundary = lambda u, v: lower_u <= u <= upper_u and lower_v <= v <= upper_v
-	blurred = image.filter(ImageFilter.GaussianBlur(pitch / 2)) if blur == "gaussian" else (image.filter(ImageFilter.BoxBlur(pitch / 2)) if blur == "box" else image)
+	image = image.filter(ImageFilter.GaussianBlur(pitch / 2)) if blur == "gaussian" else (image.filter(ImageFilter.BoxBlur(pitch / 2)) if blur == "box" else image)
 	valid_uvs = [p for p in product(range(floor(lower_u), ceil(upper_u) + 1), range(floor(lower_v), ceil(upper_v) + 1)) if boundary(*p)]
+	if intp == "lanczos2":
+		resample = make_lanczos_resampler(n=2)
+	else:
+		resample = resample_nearest
 	for u, v in valid_uvs:
 		x, y = inverse_transform(u, v)
 		if -pitch < x < image.width + pitch and -pitch < y < image.height + pitch:
-			color = blurred.getpixel((floor(min(max(x, 0), blurred.width - 1)), floor(min(max(y, 0), blurred.height - 1))))
+			color = resample(image, x, y)
 			yield x, y, color
 
 # シングルバンドの画像を網点化した画像を返す

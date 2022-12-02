@@ -13,6 +13,7 @@ from modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_
 # メイン関数
 def main():
 	exit_code = 0
+
 	# コマンドライン引数をパース
 	parser = ArgumentParser(allow_abbrev=False, description="Halftone Converter: an image converter to generate halftone images")
 	parser.add_argument("images", metavar="FILE", type=nonempty, nargs="+", help="describe input image files")
