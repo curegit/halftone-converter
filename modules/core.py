@@ -79,23 +79,47 @@ def make_transforms(pitch, angle, origin=(0.0, 0.0)):
 		return x, y
 	return transform, inverse_transform
 
-def make_getpixel(image):
-	def getpixel(x, y):
-		pass
+# 画像端で座標を折り返す関数
+def reflect(x, k):
+	if x < 0:
+		return reflect(-x, k)
+	elif x <= k:
+		return x
+	elif x <= 2 * k:
+		return 2 * k - x
+	else:
+		return reflect(x % (2 * k), k)
 
+# 画像端で座標を折り返して画素値を取得する関数
+def getpixel(image, x, y):
+	i = reflect(x, Image.width)
+	j = reflect(y, Image.height)
+	return image.getpixel((floor(min(max(i, 0), image.width - 1)), floor(min(max(j, 0), image.height - 1))))
+
+# 最近傍リサンプリング
 def resample_nearest(image, x, y):
 	return image.getpixel((floor(min(max(x, 0), image.width - 1)), floor(min(max(y, 0), image.height - 1))))
 
-def resample_average(image, x, y):
+# 線形リサンプリング関数
+def bilinear(image, x, y):
 	pass
 
+# Lanczos 窓関数
+def lanczos(x, n):
+	return np.sinc(x) * np.sinc(x / n) if abs(x) < n else 0.0
+
+# Lanczos リサンプリング関数を返す
 def make_lanczos_resampler(n=2):
 	def resample_lanczos(image, x, y):
-		pass
-	return resample_lanczos
+		i = np.arange([-3 * n, 3 * n]) - floor(x)
+		j = np.arange([-3 * n, 3 * n]) - floor(y)
 
-def resample_spline16(image, x, y):
-	pass
+
+
+		w =
+		p =
+		return float(np.sum(w * p))
+	return resample_lanczos
 
 def resample_spline36(image, x, y):
 	pass
