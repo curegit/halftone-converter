@@ -113,11 +113,11 @@ def make_lanczos_resampler(n=2):
 	def resample_lanczos(image, x, y):
 		i = np.arange([-3 * n, 3 * n]) - floor(x)
 		j = np.arange([-3 * n, 3 * n]) - floor(y)
-
-
-
-		w =
-		p =
+		#p = [i - floor(x), j - floor(y) for i, j in product(range(-3 * n, 3 * n), range(-3 * n, 3 * n))]
+		wx = np.array([lanczos(a, n) for a in i])
+		wy = np.array([lanczos(a, n) for a in j])
+		w = wx.reshape((1, 4)) * wy.reshape((4, 1))
+		p = np.array([[image.getpixel((a, b)) for b in i] for a in j])
 		return float(np.sum(w * p))
 	return resample_lanczos
 
