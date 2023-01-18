@@ -1,19 +1,19 @@
 # Halftone Converter
 
-An image converter to generate halftone images of high quality
+An image converter to create high quality halftone images
 
-## Features
+## Key Features
 
-- Make your images halftones easily
-- High-quality rendering by Cairo graphics library
+- Easily halftone your images
+- High-quality rendering using Cairo graphics library
 - Halftones of 3 color types – Gray, RGB, and CMYK
-- Color space transform with ICC profiles
+- Color space transformation using ICC profiles
 
 ![Colorful Play Balls](images/colorful-play-balls.png)
 
 ## Requirements
 
-This application can be run by Python3 on any OS.
+This application can be run from Python3 on any OS.
 Note that [Pycairo requires Cairo core library](https://pycairo.readthedocs.io/en/latest/getting_started.html).
 
 - Python >= 3.7
@@ -40,7 +40,7 @@ conda install pycairo
 ## Usage
 
 The application takes image files as input and outputs halftones as image files.
-It has command line interface shown as below.
+It has command line interface as shown below.
 
 ```sh
 python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
