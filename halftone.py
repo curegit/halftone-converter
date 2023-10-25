@@ -126,7 +126,7 @@ def main():
 	if args.glob:
 		input_images = []
 		for i in args.images:
-			input_images += [f for f in glob(i, recursive=True) if isfile(f)]
+			input_images += [f for f in glob(i, recursive=True, include_hidden=True) if isfile(f)]
 		input_images = list(dict.fromkeys(input_images))
 	else:
 		input_images = args.images
