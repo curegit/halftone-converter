@@ -84,10 +84,11 @@ By default, it skips failed jobs and starts the next jobs.
 
 #### -g, --glob
 
-interpret `FILE` values as glob patterns (e.g. `*.png`, `**/*.jpg`)
+interpret `FILE` values as glob patterns (e.g., `*.png`, `**/*.jpg`)
 
 Use this option if the shell's wildcard expansion is not available and enough.
 Pattern `**` matches any files and zero or more directories recursively.
+This glob function will include hidden files and directories.
 
 #### -f, --force
 
