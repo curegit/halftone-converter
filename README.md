@@ -29,11 +29,11 @@ brew install py3cairo
 
 ### Install Pycairo on Windows
 
-```ps
+```cmd
 pip install pycairo
 ```
 
-```ps
+```cmd
 conda install pycairo
 ```
 
@@ -84,10 +84,11 @@ By default, it skips failed jobs and starts the next jobs.
 
 #### -g, --glob
 
-interpret `FILE` values as glob patterns (e.g. `*.png`, `**/*.jpg`)
+interpret `FILE` values as glob patterns (e.g., `*.png`, `**/*.jpg`)
 
 Use this option if the shell's wildcard expansion is not available and enough.
 Pattern `**` matches any files and zero or more directories recursively.
+This glob function will NOT include hidden files or directories.
 
 #### -f, --force
 
