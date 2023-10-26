@@ -80,7 +80,7 @@ suppress non-error messages
 
 stop the program immediately by an error even if jobs remain
 
-By default, it skips failed jobs and starts the next jobs.
+By default, it skips failed jobs and starts the next one.
 
 #### -g, --glob
 
@@ -208,12 +208,12 @@ rendering intent for transform to CMYK images
 
 disable the limitation of input image size
 
-Be careful.
-This option may make DoS attacks possible.
+Be careful in the context of server-side applications.
+This option may make DoS attacks possible (Decompression bomb).
 
 #### --ignore, --ignore-embedded-profile
 
-don't use ICC profiles embedded in input images
+don't respect ICC profiles embedded in input images
 
 #### --discard, --discard-profile
 
@@ -221,7 +221,7 @@ don't embed ICC profiles in output images
 
 #### --naive, --naive-transform
 
-use approximate conversion algorithm (naive transform) instead of ICC-based transform
+use approximate color space conversion algorithm (naive transform) instead of ICC-based transform
 
 #### --gamma-correction
 
@@ -235,7 +235,7 @@ black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive
 
 don't convert any channels to halftones
 
-This is useful for looking color space transform.
+This is useful for previewing color space transform.
 
 #### --keep-red
 
@@ -279,9 +279,9 @@ don't convert K channels to halftones
 
 ![Chevrolet Opala 87](images/chevrolet-opala.png)
 
-## Credits
+## Acknowledgments
 
-This application contains some ICC profiles to convert images between different color spaces.
+This application contains some default ICC profiles to convert images between different color spaces.
 [sGray.icc](profiles/sGray.icc), [sRGB.icc](profiles/sRGB.icc) and [SWOP.icc](profiles/SWOP.icc) are provided by Artifex Software as a part of [GPL Ghostscript](https://www.ghostscript.com/) under the [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.html).
 
 ## License
