@@ -30,7 +30,7 @@ def main():
 	parser.add_argument("-x", "-s", "--scale", type=positive, default=1, help="the scale factor of output images to input images")
 	parser.add_argument("-b", "--blur", type=choice, choices=["none", "box", "gaussian"], default="none", help="apply blur effect")
 	parser.add_argument("-B", "--blur-radius", metavar="PX", type=positive, default=2, help="specify blur radius")
-	parser.add_argument("-i", "--resampler", type=choice, choices=["nearest", "linear", "lanczos2", "lanczos3", "spline36"], default="lanczos2", help="resampling method")
+	parser.add_argument("-F", "--resampler", type=choice, choices=["nearest", "linear", "lanczos2", "lanczos3", "spline36"], default="lanczos2", help="resampling method")
 	parser.add_argument("-A", "--angle", "--gray-angle", metavar="DEG", dest="gray_angle", type=float, default=45, help="arrange dots by DEG degrees in Gray channel")
 	parser.add_argument("-t", "--Angles", "--rgb-angles", metavar="DEG", dest="rgb_angles", type=float, nargs=3, default=(15, 75, 30), help="arrange dots by DEG degrees in each RGB channels")
 	parser.add_argument("-a", "--angles", "--cmyk-angles", metavar="DEG", dest="cmyk_angles", type=float, nargs=4, default=(15, 75, 30, 45), help="arrange dots by DEG degrees in each CMYK channels")
@@ -190,11 +190,11 @@ def main():
 					target, same = img, True
 			# ハーフトーン化
 			if target.mode == "L":
-				halftone = halftone_grayscale_image(target, args.pitch, args.gray_angle, args.scale, args.blur)
+				halftone = halftone_grayscale_image(target, args.pitch, args.gray_angle, args.scale, (args.blur, args.blur_radius), args.resampler)
 			elif target.mode == "RGB":
-				halftone = halftone_rgb_image(target, args.pitch, args.rgb_angles, args.scale, args.blur, (args.keep_red, args.keep_green, args.keep_blue))
+				halftone = halftone_rgb_image(target, args.pitch, args.rgb_angles, args.scale, (args.blur, args.blur_radius), args.resampler, (args.keep_red, args.keep_green, args.keep_blue))
 			elif target.mode == "CMYK":
-				halftone = halftone_cmyk_image(target, args.pitch, args.cmyk_angles, args.scale, args.blur, (args.keep_cyan, args.keep_magenta, args.keep_yellow, args.keep_key))
+				halftone = halftone_cmyk_image(target, args.pitch, args.cmyk_angles, args.scale, (args.blur, args.blur_radius), args.resampler, (args.keep_cyan, args.keep_magenta, args.keep_yellow, args.keep_key))
 			# 目的の出力モードへ変換する
 			if halftone.mode == "L":
 				if args.output == "gray":
