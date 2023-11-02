@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+from time import time
 from glob import glob
 from os.path import isfile
 from argparse import ArgumentParser
@@ -146,6 +147,7 @@ def main():
 
 	# 処理のメインループ
 	for i, f in enumerate(input_images):
+		t = time()
 		try:
 			# 画像を開く
 			img = Image.open(f)
@@ -246,8 +248,9 @@ def main():
 				return exit_code
 		# 成功を報告する
 		else:
+			dt = time() - t
 			if not args.quiet:
-				print(f"{i + 1}/{n} done: {f} -> {path}")
+				print(f"{i + 1}/{n} done: {f} -> {path} ({dt:.1f} sec)")
 	return exit_code
 
 # エントリポイントを保護
