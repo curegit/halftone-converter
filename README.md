@@ -16,10 +16,10 @@ An image converter to create high quality halftone images
 This application can be run from Python3 on any OS.
 Note that [Pycairo requires Cairo core library](https://pycairo.readthedocs.io/en/latest/getting_started.html).
 
-- Python >= 3.7
-- NumPy >= 1.17
-- Pillow >= 8.2
-- Pycairo >= 1.20
+- Python >= 3.9
+- NumPy >= 1.23
+- Pillow >= 10.1
+- Pycairo >= 1.22
 
 ### Install Pycairo on macOS
 
