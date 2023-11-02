@@ -1,25 +1,25 @@
 # Halftone Converter
 
-An image converter to generate halftone images of high quality
+An image converter to create high quality halftone images
 
-## Features
+## Key Features
 
-- Make your images halftones easily
-- High-quality rendering by Cairo graphics library
+- Easily halftone your images
+- High-quality rendering using Cairo graphics library
 - Halftones of 3 color types – Gray, RGB, and CMYK
-- Color space transform with ICC profiles
+- Color space transformation using ICC profiles
 
 ![Colorful Play Balls](images/colorful-play-balls.png)
 
 ## Requirements
 
-This application can be run by Python3 on any OS.
+This application can be run from Python3 on any OS.
 Note that [Pycairo requires Cairo core library](https://pycairo.readthedocs.io/en/latest/getting_started.html).
 
-- Python >= 3.7
-- NumPy >= 1.17
-- Pillow >= 8.2
-- Pycairo >= 1.20
+- Python >= 3.9
+- NumPy >= 1.23
+- Pillow >= 10.1
+- Pycairo >= 1.22
 
 ### Install Pycairo on macOS
 
@@ -29,18 +29,18 @@ brew install py3cairo
 
 ### Install Pycairo on Windows
 
-```ps
+```cmd
 pip install pycairo
 ```
 
-```ps
+```cmd
 conda install pycairo
 ```
 
 ## Usage
 
 The application takes image files as input and outputs halftones as image files.
-It has command line interface shown as below.
+It has command line interface as shown below.
 
 ```sh
 python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
@@ -80,14 +80,15 @@ suppress non-error messages
 
 stop the program immediately by an error even if jobs remain
 
-By default, it skips failed jobs and starts the next jobs.
+By default, it skips failed jobs and starts the next one.
 
 #### -g, --glob
 
-interpret `FILE` values as glob patterns (e.g. `*.png`, `**/*.jpg`)
+interpret `FILE` values as glob patterns (e.g., `*.png`, `**/*.jpg`)
 
 Use this option if the shell's wildcard expansion is not available and enough.
 Pattern `**` matches any files and zero or more directories recursively.
+This glob function will NOT include hidden files or directories.
 
 #### -f, --force
 
@@ -207,12 +208,12 @@ rendering intent for transform to CMYK images
 
 disable the limitation of input image size
 
-Be careful.
-This option may make DoS attacks possible.
+Be careful in the context of server-side applications.
+This option may make DoS attacks possible (Decompression bomb).
 
 #### --ignore, --ignore-embedded-profile
 
-don't use ICC profiles embedded in input images
+don't respect ICC profiles embedded in input images
 
 #### --discard, --discard-profile
 
@@ -220,7 +221,7 @@ don't embed ICC profiles in output images
 
 #### --naive, --naive-transform
 
-use approximate conversion algorithm (naive transform) instead of ICC-based transform
+use approximate color space conversion algorithm (naive transform) instead of ICC-based transform
 
 #### --gamma-correction
 
@@ -234,7 +235,7 @@ black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive
 
 don't convert any channels to halftones
 
-This is useful for looking color space transform.
+This is useful for previewing color space transform.
 
 #### --keep-red
 
@@ -278,9 +279,9 @@ don't convert K channels to halftones
 
 ![Chevrolet Opala 87](images/chevrolet-opala.png)
 
-## Credits
+## Acknowledgments
 
-This application contains some ICC profiles to convert images between different color spaces.
+This application contains some default ICC profiles to convert images between different color spaces.
 [sGray.icc](profiles/sGray.icc), [sRGB.icc](profiles/sRGB.icc) and [SWOP.icc](profiles/SWOP.icc) are provided by Artifex Software as a part of [GPL Ghostscript](https://www.ghostscript.com/) under the [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.html).
 
 ## License

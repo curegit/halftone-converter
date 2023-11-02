@@ -1,6 +1,7 @@
 import numpy as np
 from sys import float_info
 from itertools import product
+from functools import cache
 from math import floor, ceil, sqrt, sin, cos, acos, pi
 from PIL import Image, ImageFilter, ImageOps
 from PIL.Image import Resampling
@@ -52,6 +53,7 @@ def radius_table(pitch, depth):
 	yield rmax
 
 # 着色部分の占有率からドット半径を返す関数を返す
+@cache
 def make_radius(pitch, depth):
 	table = list(radius_table(pitch, depth))
 	def radius(occupancy):

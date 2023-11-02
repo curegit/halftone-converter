@@ -40,13 +40,13 @@ def choice(label):
 def intent(label):
 	label = str.lower(label)
 	if label == "per":
-		return ImageCms.INTENT_PERCEPTUAL
+		return ImageCms.Intent.PERCEPTUAL
 	if label == "sat":
-		return ImageCms.INTENT_SATURATION
+		return ImageCms.Intent.SATURATION
 	if label == "rel":
-		return ImageCms.INTENT_RELATIVE_COLORIMETRIC
+		return ImageCms.Intent.RELATIVE_COLORIMETRIC
 	if label == "abs":
-		return ImageCms.INTENT_ABSOLUTE_COLORIMETRIC
+		return ImageCms.Intent.ABSOLUTE_COLORIMETRIC
 	if 0 <= int(label) <= 3:
 		return int(label)
 	else:

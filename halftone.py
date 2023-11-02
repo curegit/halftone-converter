@@ -82,7 +82,7 @@ def main():
 	else:
 		in_gray_profile = ImageCms.getOpenProfile(args.input_gray_profile)
 	if args.rgb_profile is None:
-		rgb_profile =  ImageCms.getOpenProfile(filerelpath("profiles/sRGB.icc"))
+		rgb_profile = ImageCms.getOpenProfile(filerelpath("profiles/sRGB.icc"))
 	else:
 		rgb_profile = ImageCms.getOpenProfile(args.rgb_profile)
 	if args.input_rgb_profile is None:
