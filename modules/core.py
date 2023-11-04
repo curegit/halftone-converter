@@ -103,9 +103,22 @@ def getpixel(image, x, y):
 def resample_nearest(image, x, y):
 	return image.getpixel((floor(min(max(x, 0), image.width - 1)), floor(min(max(y, 0), image.height - 1)))) / 255
 
+# 線形窓関数
+def linear(x):
+	if -1 < x < 1:
+		return 1.0 - abs(x)
+	else:
+		return 0.0
+
 # 線形リサンプリング関数
 def bilinear(image, x, y):
-	pass
+	i = np.arange(-1, 1) + round(x)
+	j = np.arange(-1, 1) + round(y)
+	a = i - x + 0.5
+	b = j - y + 0.5
+	w = np.array([[linear(t) * linear(s) for t in a] for s in b])
+	p = np.array([[getpixel(image, t, s) for t in i] for s in j])
+	return float(np.clip(np.sum(w * p) / 255, 0.0, 1.0))
 
 # Lanczos 窓関数
 def lanczos(x, n):
