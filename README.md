@@ -116,12 +116,6 @@ the scale factor of output images to input images
 
 The default value is 1.0.
 
-#### -b {none,box,gaussian}, --blur {none,box,gaussian}
-
-blur type to calculate the mean of pixels
-
-The default is `gaussian`.
-
 ### -b [{box,gaussian}], --blur [{box,gaussian}]
 
 apply blur effect
