@@ -179,8 +179,6 @@ def halftone_dots(image, pitch, angle, blur, resampler="lanczos2", progress_call
 			image = image.filter(ImageFilter.GaussianBlur(blur_radius))
 		elif blur_name == "box":
 			image = image.filter(ImageFilter.BoxBlur(blur_radius))
-		elif blur_name == "none":
-			pass
 		else:
 			raise ValueError()
 	if resampler == "nearest":
