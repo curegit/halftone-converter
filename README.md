@@ -16,26 +16,11 @@ An image converter to create high quality halftone images
 This application can be run from Python3 on any OS.
 Note that [Pycairo requires Cairo core library](https://pycairo.readthedocs.io/en/latest/getting_started.html).
 
-- Python >= 3.7
-- NumPy >= 1.17
-- Pillow >= 8.2
-- Pycairo >= 1.20
-
-### Install Pycairo on macOS
-
-```sh
-brew install py3cairo
-```
-
-### Install Pycairo on Windows
-
-```cmd
-pip install pycairo
-```
-
-```cmd
-conda install pycairo
-```
+- Python >= 3.9
+- NumPy >= 1.24
+- Pillow >= 10.1
+- Pycairo >= 1.23
+- Rich >= 13.0
 
 ## Usage
 
@@ -44,7 +29,8 @@ It has command line interface as shown below.
 
 ```sh
 python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
-                    [-E [START]] [-p PX] [-x SCALE] [-b {none,box,gaussian}]
+                    [-E [START]] [-p PX] [-x SCALE] [-b [{box,gaussian}]]
+                    [-B PX] [-F {nearest,linear,lanczos2,lanczos3,spline36}]
                     [-A DEG] [-t DEG DEG DEG] [-a DEG DEG DEG DEG]
                     [-m {auto,gray,rgb,cmyk}] [-o {auto,gray,rgb,cmyk}] [-T]
                     [-G GRAY_ICC_FILE] [-I RGB_ICC_FILE] [-M CMYK_ICC_FILE]
@@ -130,11 +116,23 @@ the scale factor of output images to input images
 
 The default value is 1.0.
 
-#### -b {none,box,gaussian}, --blur {none,box,gaussian}
+#### -b [{box,gaussian}], --blur [{box,gaussian}]
 
-blur type to calculate the mean of pixels
+apply blur effect
 
-The default is `gaussian`.
+If no blur type is specified, gaussian is used.
+
+#### -B PX, --blur-radius PX
+
+specify blur radius
+
+If not specified, half of the pitch is used.
+
+#### -F {nearest,linear,lanczos2,lanczos3,spline36}, --resample {nearest,linear,lanczos2,lanczos3,spline36}
+
+resampling method for determining dot size
+
+The default is `linear`.
 
 #### -A DEG, --angle DEG, --gray-angle DEG
 

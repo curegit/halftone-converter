@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
 import sys
+import contextlib
+from time import time
 from glob import glob
 from os.path import isfile
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from PIL import Image, ImageCms
+from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from modules.args import positive, rate, nonempty, filenameseg, choice, intent
 from modules.util import eprint, mkdirp, filepath, filerelpath, purefilename, altfilepath
 from modules.color import make_profile_transform, make_fake_transforms
@@ -13,8 +16,9 @@ from modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_
 # メイン関数
 def main():
 	exit_code = 0
+
 	# コマンドライン引数をパース
-	parser = ArgumentParser(allow_abbrev=False, description="Halftone Converter: an image converter to generate halftone images")
+	parser = ArgumentParser(allow_abbrev=False, formatter_class=ArgumentDefaultsHelpFormatter, description="Halftone Converter: an image converter to generate halftone images")
 	parser.add_argument("images", metavar="FILE", type=nonempty, nargs="+", help="describe input image files")
 	parser.add_argument("-q", "--quiet", action="store_true", help="suppress non-error messages")
 	parser.add_argument("-e", "--exit", action="store_true", help="stop immediately by an error even if jobs remain")
@@ -26,7 +30,9 @@ def main():
 	parser.add_argument("-E", "--enumerate", metavar="START", type=int, nargs="?", const=1, help="use consecutive numbers as output filenames")
 	parser.add_argument("-p", "--pitch", "--interval", metavar="PX", type=positive, default=4, help="arrange halftone dots at intervals of PX pixels in input images")
 	parser.add_argument("-x", "-s", "--scale", type=positive, default=1, help="the scale factor of output images to input images")
-	parser.add_argument("-b", "--blur", type=choice, choices=["none", "box", "gaussian"], default="gaussian", help="blur type to calculate the mean of pixels")
+	parser.add_argument("-b", "--blur", type=choice, choices=["box", "gaussian"], nargs="?", const="gaussian", help="apply blur effect (if no blur type is specified, gaussian is used)")
+	parser.add_argument("-B", "--blur-radius", metavar="PX", type=positive, help="specify blur radius (if not specified, half of the pitch is used)")
+	parser.add_argument("-F", "--resample", type=choice, choices=["nearest", "linear", "lanczos2", "lanczos3", "spline36"], default="linear", help="resampling method for determining dot size")
 	parser.add_argument("-A", "--angle", "--gray-angle", metavar="DEG", dest="gray_angle", type=float, default=45, help="arrange dots by DEG degrees in Gray channel")
 	parser.add_argument("-t", "--Angles", "--rgb-angles", metavar="DEG", dest="rgb_angles", type=float, nargs=3, default=(15, 75, 30), help="arrange dots by DEG degrees in each RGB channels")
 	parser.add_argument("-a", "--angles", "--cmyk-angles", metavar="DEG", dest="cmyk_angles", type=float, nargs=4, default=(15, 75, 30, 45), help="arrange dots by DEG degrees in each CMYK channels")
@@ -115,9 +121,6 @@ def main():
 		in_gray_cmyk = make_profile_transform((in_gray_profile, cmyk_profile), ("L", "CMYK"), args.cmyk_intent, not args.ignore)
 		in_cmyk_gray = make_profile_transform((in_cmyk_profile, gray_profile), ("CMYK", "L"), args.gray_intent, not args.ignore)
 
-	# 出力ディレクトリを作る
-	mkdirp(args.directory)
-
 	# ピクセル数の制限を無くす
 	if args.allow_huge:
 		Image.MAX_IMAGE_PIXELS = None
@@ -143,6 +146,7 @@ def main():
 
 	# 処理のメインループ
 	for i, f in enumerate(input_images):
+		t = time()
 		try:
 			# 画像を開く
 			img = Image.open(f)
@@ -184,12 +188,48 @@ def main():
 				else:
 					target, same = img, True
 			# ハーフトーン化
-			if target.mode == "L":
-				halftone = halftone_grayscale_image(target, args.pitch, args.gray_angle, args.scale, args.blur)
-			elif target.mode == "RGB":
-				halftone = halftone_rgb_image(target, args.pitch, args.rgb_angles, args.scale, args.blur, (args.keep_red, args.keep_green, args.keep_blue))
-			elif target.mode == "CMYK":
-				halftone = halftone_cmyk_image(target, args.pitch, args.cmyk_angles, args.scale, args.blur, (args.keep_cyan, args.keep_magenta, args.keep_yellow, args.keep_key))
+			blur = None if args.blur is None else (args.blur, args.blur_radius)
+			cols = (
+				TextColumn("[progress.description]{task.description}"),
+				BarColumn(bar_width=50),
+				TaskProgressColumn(),
+			)
+			with contextlib.nullcontext(None) if args.quiet else Progress(*cols) as progress:
+				if target.mode == "L":
+					if progress is None:
+						fn = None
+					else:
+						t = progress.add_task("Gray", total=1.0)
+						fn = lambda p: progress.update(t, completed=p)
+					halftone = halftone_grayscale_image(target, args.pitch, args.gray_angle, args.scale, blur, args.resample, progress_callback=fn)
+				elif target.mode == "RGB":
+					if progress is None:
+						fns = (None, None, None)
+					else:
+						r = progress.add_task("[red]Red", total=1.0)
+						g = progress.add_task("[green]Green", total=1.0)
+						b = progress.add_task("[blue]Blue", total=1.0)
+						fns = (
+							lambda p: progress.update(r, completed=p),
+							lambda p: progress.update(g, completed=p),
+							lambda p: progress.update(b, completed=p),
+						)
+					halftone = halftone_rgb_image(target, args.pitch, args.rgb_angles, args.scale, blur, args.resample, (args.keep_red, args.keep_green, args.keep_blue), progress_callbacks=fns)
+				elif target.mode == "CMYK":
+					if progress is None:
+						fns = (None, None, None, None)
+					else:
+						c = progress.add_task("[cyan]Cyan", total=1.0)
+						m = progress.add_task("[magenta]Magenta", total=1.0)
+						y = progress.add_task("[yellow]Yellow", total=1.0)
+						k = progress.add_task("Key", total=1.0)
+						fns = (
+							lambda p: progress.update(c, completed=p),
+							lambda p: progress.update(m, completed=p),
+							lambda p: progress.update(y, completed=p),
+							lambda p: progress.update(k, completed=p),
+						)
+					halftone = halftone_cmyk_image(target, args.pitch, args.cmyk_angles, args.scale, blur, args.resample, (args.keep_cyan, args.keep_magenta, args.keep_yellow, args.keep_key), progress_callbacks=fns)
 			# 目的の出力モードへ変換する
 			if halftone.mode == "L":
 				if args.output == "gray":
@@ -222,6 +262,8 @@ def main():
 			if args.discard:
 				if complete.info.get("icc_profile"):
 					complete.info.pop("icc_profile")
+			# 出力ディレクトリを作る
+			mkdirp(args.directory)
 			# ファイルへ保存する
 			if args.enumerate is None:
 				name = args.prefix + purefilename(f) + args.suffix
@@ -243,8 +285,9 @@ def main():
 				return exit_code
 		# 成功を報告する
 		else:
+			dt = time() - t
 			if not args.quiet:
-				print(f"{i + 1}/{n} done: {f} -> {path}")
+				print(f"{i + 1}/{n} done: {f} -> {path} ({dt:.1f} sec)")
 	return exit_code
 
 # エントリポイントを保護
