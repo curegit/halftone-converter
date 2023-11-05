@@ -116,19 +116,19 @@ the scale factor of output images to input images
 
 The default value is 1.0.
 
-### -b [{box,gaussian}], --blur [{box,gaussian}]
+#### -b [{box,gaussian}], --blur [{box,gaussian}]
 
 apply blur effect
 
 If no blur type is specified, gaussian is used.
 
-### -B PX, --blur-radius PX
+#### -B PX, --blur-radius PX
 
 specify blur radius
 
 If not specified, half of the pitch is used.
 
-### -F {nearest,linear,lanczos2,lanczos3,spline36}, --resample {nearest,linear,lanczos2,lanczos3,spline36}
+#### -F {nearest,linear,lanczos2,lanczos3,spline36}, --resample {nearest,linear,lanczos2,lanczos3,spline36}
 
 resampling method for determining dot size
 
