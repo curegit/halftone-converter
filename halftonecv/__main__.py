@@ -1,3 +1,6 @@
+import sys
 from .main import main
 
-main()
+# エントリポイントを保護
+if __name__ == "__main__":
+	sys.exit(main())

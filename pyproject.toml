@@ -27,6 +27,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pip", "setuptools", "build", "twine"]
 
+[project.scripts]
+halftonecv = "halftonecv.main:main"
+
 [project.urls]
 homepage = "https://github.com/curegit/halftone-converter"
 repository = "https://github.com/curegit/halftone-converter.git"
