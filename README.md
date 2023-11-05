@@ -11,7 +11,13 @@ An image converter to create high quality halftone images
 
 ![Colorful Play Balls](images/colorful-play-balls.png)
 
-## Requirements
+## Install
+
+```sh
+pip3 install halftone-converter
+```
+
+### Requirements
 
 This application can be run from Python3 on any OS.
 Note that [Pycairo requires Cairo core library](https://pycairo.readthedocs.io/en/latest/getting_started.html).
@@ -24,23 +30,25 @@ Note that [Pycairo requires Cairo core library](https://pycairo.readthedocs.io/e
 
 ## Usage
 
-The application takes image files as input and outputs halftones as image files.
+This application takes image files as input and outputs halftones as image files.
+
+The main program can be invoked either through the `halftonecv` command or through the Python main module option `python3 -m halftonecv`.
 It has command line interface as shown below.
 
 ```sh
-python3 halftone.py [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
-                    [-E [START]] [-p PX] [-x SCALE] [-b [{box,gaussian}]]
-                    [-B PX] [-F {nearest,linear,lanczos2,lanczos3,spline36}]
-                    [-A DEG] [-t DEG DEG DEG] [-a DEG DEG DEG DEG]
-                    [-m {auto,gray,rgb,cmyk}] [-o {auto,gray,rgb,cmyk}] [-T]
-                    [-G GRAY_ICC_FILE] [-I RGB_ICC_FILE] [-M CMYK_ICC_FILE]
-                    [-L GRAY_ICC_FILE] [-l {per,sat,rel,abs,0,1,2,3}]
-                    [-R RGB_ICC_FILE] [-r {per,sat,rel,abs,0,1,2,3}]
-                    [-C CMYK_ICC_FILE] [-c {per,sat,rel,abs,0,1,2,3}] [-H]
-                    [--ignore] [--discard] [--naive] [--gamma-correction]
-                    [--key RATE] [-K] [--keep-red] [--keep-green] [--keep-blue]
-                    [--keep-cyan] [--keep-magenta] [--keep-yellow] [--keep-key]
-                    FILE [FILE ...]
+usage: halftonecv [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
+                  [-E [START]] [-p PX] [-x SCALE] [-b [{box,gaussian}]]
+                  [-B PX] [-F {nearest,linear,lanczos2,lanczos3,spline36}]
+                  [-A DEG] [-t DEG DEG DEG] [-a DEG DEG DEG DEG]
+                  [-m {auto,gray,rgb,cmyk}] [-o {auto,gray,rgb,cmyk}] [-T]
+                  [-G GRAY_ICC_FILE] [-I RGB_ICC_FILE] [-M CMYK_ICC_FILE]
+                  [-L GRAY_ICC_FILE] [-l {per,sat,rel,abs,0,1,2,3}]
+                  [-R RGB_ICC_FILE] [-r {per,sat,rel,abs,0,1,2,3}]
+                  [-C CMYK_ICC_FILE] [-c {per,sat,rel,abs,0,1,2,3}] [-H]
+                  [--ignore] [--discard] [--naive] [--gamma-correction]
+                  [--key RATE] [-K] [--keep-red] [--keep-green] [--keep-blue]
+                  [--keep-cyan] [--keep-magenta] [--keep-yellow] [--keep-key]
+                  FILE [FILE ...]
 ```
 
 ### Positional Arguments
