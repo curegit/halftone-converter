@@ -18,10 +18,10 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-  "numpy >= 1.24",
-  "pillow >= 10.1",
-  "pycairo >= 1.23",
-  "rich >= 13.0",
+  "numpy >= 1.24.0",
+  "pillow >= 9.3.0",
+  "pycairo >= 1.23.0",
+  "rich >= 13.0.0",
 ]
 
 [project.optional-dependencies]

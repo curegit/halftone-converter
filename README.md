@@ -24,7 +24,7 @@ Note that [Pycairo requires Cairo core library](https://pycairo.readthedocs.io/e
 
 - Python >= 3.9
 - NumPy >= 1.24
-- Pillow >= 10.1
+- Pillow >= 9.3
 - Pycairo >= 1.23
 - Rich >= 13.0
 
