@@ -1,8 +1,8 @@
 # This app
 *.icc
 *.icm
-!profiles/*.icc
-!profiles/*.icm
+!/halftonecv/profiles/*.icc
+!/halftonecv/profiles/*.icm
 *.jpg
 *.jpeg
 *.png
@@ -10,8 +10,8 @@
 *.tiff
 *.tga
 *.bmp
-!images/*.png
-!images/*.tiff
+!/images/*.png
+!/images/*.tiff
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys
 import contextlib
 from time import time
@@ -8,10 +6,10 @@ from os.path import isfile
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from PIL import Image, ImageCms
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
-from modules.args import positive, rate, nonempty, filenameseg, choice, intent
-from modules.util import eprint, mkdirp, filepath, filerelpath, purefilename, altfilepath
-from modules.color import make_profile_transform, make_fake_transforms
-from modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_cmyk_image
+from .modules.args import positive, rate, nonempty, filenameseg, choice, intent
+from .modules.util import eprint, mkdirp, filepath, filerelpath, purefilename, altfilepath
+from .modules.color import make_profile_transform, make_fake_transforms
+from .modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_cmyk_image
 
 # メイン関数
 def main():
