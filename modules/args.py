@@ -1,11 +1,12 @@
 from sys import float_info
 from os.path import basename
+from math import isfinite
 from PIL import ImageCms
 
 # 正の実数を受け入れる変換関数
 def positive(str):
 	value = float(str)
-	if value >= float_info.epsilon:
+	if isfinite(value) and value >= float_info.epsilon:
 		return value
 	else:
 		raise ValueError()
