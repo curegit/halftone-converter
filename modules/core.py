@@ -1,11 +1,10 @@
 import numpy as np
 from sys import float_info
-from itertools import product
-from functools import cache
+from functools import cache, lru_cache
 from math import floor, ceil, sqrt, sin, cos, acos, pi
 from PIL import Image, ImageFilter, ImageOps
 from PIL.Image import Resampling
-from cairo import ImageSurface, Context, Antialias, Filter, FORMAT_ARGB32, OPERATOR_SOURCE
+from cairo import ImageSurface, Context, Antialias, Filter, Operator, Format
 
 # ドット半径から着色部分の占有率を返す関数を返す
 def make_occupancy(pitch):
@@ -111,7 +110,7 @@ def linear(x):
 		return 0.0
 
 # 線形リサンプリング関数
-def bilinear(image, x, y):
+def resample_bilinear(image, x, y):
 	i = np.arange(-1, 1) + round(x)
 	j = np.arange(-1, 1) + round(y)
 	a = i - x + 0.5
@@ -121,28 +120,48 @@ def bilinear(image, x, y):
 	return float(np.clip(np.sum(w * p) / 255, 0.0, 1.0))
 
 # Lanczos 窓関数
+@lru_cache(10000 ** 2)
 def lanczos(x, n):
 	return float(np.sinc(x) * np.sinc(x / n)) if abs(x) < n else 0.0
 
 # Lanczos リサンプリング関数を返す
 def make_lanczos_resampler(n=2):
 	def resample_lanczos(image, x, y):
-		i = np.arange(-2 * n, 2 * n) + floor(x)
-		j = np.arange(-2 * n, 2 * n) + floor(y)
-		a = i - x
-		b = j - y
-		wx = np.array([lanczos(t, n) for t in a])
-		wy = np.array([lanczos(t, n) for t in b])
-		w = wx.reshape((1, 4 * n)) * wy.reshape((4 * n, 1))
+		i = np.arange(-n, n) + round(x)
+		j = np.arange(-n, n) + round(y)
+		a = i - x + 0.5
+		b = j - y + 0.5
+		w_tmp = np.array([[lanczos(t, n) * lanczos(s, n) for t in a] for s in b])
+		w = w_tmp / w_tmp.sum()
 		p = np.array([[getpixel(image, t, s) for t in i] for s in j])
 		return float(np.clip(np.sum(w * p) / 255, 0.0, 1.0))
 	return resample_lanczos
 
+# Spline36 窓関数
+@lru_cache(10000 ** 2)
+def spline36(x):
+	d = abs(x)
+	if d <= 1.0:
+		return (((247.0 * d - 453.0) * d - 3.0) * d + 209.0) / 209.0
+	if d <= 2.0:
+		return (((-114.0 * d + 612.0) * d - 1038.0) * d + 540.0) / 209.0
+	if d <= 3.0:
+		return (((19.0 * d - 159.0) * d + 434.0) * d - 384.0) / 209.0
+	else:
+		return 0.0
+
+# Spline36 リサンプリング関数を返す
 def resample_spline36(image, x, y):
-	pass
+	i = np.arange(-3, 3) + round(x)
+	j = np.arange(-3, 3) + round(y)
+	a = i - x + 0.5
+	b = j - y + 0.5
+	w = np.array([[spline36(t) * spline36(s) for t in a] for s in b])
+	p = np.array([[getpixel(image, t, s) for t in i] for s in j])
+	return float(np.clip(np.sum(w * p) / 255, 0.0, 1.0))
 
 # シングルバンドの画像から網点の位置と階調のイテレータを返す
-def halftone_dots(image, pitch, angle, blur, resampler="lanczos2"):
+def halftone_dots(image, pitch, angle, blur, resampler="lanczos2", progress_callback=None):
 	center = image.width / 2, image.height / 2
 	transform, inverse_transform = make_transforms(pitch, angle, center)
 	xy_bounds = [(-pitch, -pitch), (image.width + pitch, -pitch), (image.width + pitch, image.height + pitch), (-pitch, image.height + pitch)]
@@ -152,76 +171,102 @@ def halftone_dots(image, pitch, angle, blur, resampler="lanczos2"):
 	lower_v = min([v for u, v in uv_bounds])
 	upper_v = max([v for u, v in uv_bounds])
 	boundary = lambda u, v: lower_u <= u <= upper_u and lower_v <= v <= upper_v
-	blur_name, blur_radius = blur
-	if blur_name == "gaussian":
-		image = image.filter(ImageFilter.GaussianBlur(blur_radius))
-	elif blur_name == "box":
-		image = image.filter(ImageFilter.BoxBlur(blur_radius))
-	if resampler == "lanczos2":
-		resample = make_lanczos_resampler(n=2)
-	else:
+	if blur is not None:
+		blur_name, blur_radius = blur
+		if blur_radius is None:
+			blur_radius = pitch / 2
+		if blur_name == "gaussian":
+			image = image.filter(ImageFilter.GaussianBlur(blur_radius))
+		elif blur_name == "box":
+			image = image.filter(ImageFilter.BoxBlur(blur_radius))
+		elif blur_name == "none":
+			pass
+		else:
+			raise ValueError()
+	if resampler == "nearest":
 		resample = resample_nearest
+	elif resampler == "linear":
+		resample = resample_bilinear
+	elif resampler == "lanczos2":
+		resample = make_lanczos_resampler(n=2)
+	elif resampler == "lanczos3":
+		resample = make_lanczos_resampler(n=3)
+	elif resampler == "spline36":
+		resample = resample_spline36
+	else:
+		raise ValueError()
 	us = range(floor(lower_u), ceil(upper_u) + 1)
 	vs = range(floor(lower_v), ceil(upper_v) + 1)
-	for u, v in product(us, vs):
-		if boundary(u, v):
-			x, y = inverse_transform(u, v)
-			if -pitch < x < image.width + pitch and -pitch < y < image.height + pitch:
-				color = resample(image, x, y)
-				yield x, y, color
+	count = len(us) * len(vs)
+	i = 0
+	for u in us:
+		for v in vs:
+			i += 1
+			if boundary(u, v):
+				x, y = inverse_transform(u, v)
+				if -pitch < x < image.width + pitch and -pitch < y < image.height + pitch:
+					color = resample(image, x, y)
+					if progress_callback is not None:
+						progress_callback(i / count)
+					yield x, y, color
+	if progress_callback is not None:
+		progress_callback(1.0)
 
 # シングルバンドの画像を網点化した画像を返す
-def halftone_image(image, pitch, angle, scale, blur=None, resampler="lanczos2", keep_flag=False):
+def halftone_image(image, pitch, angle, scale, blur=None, resampler="lanczos2", keep_flag=False, progress_callback=None):
 	width = round(image.width * scale)
 	height = round(image.height * scale)
 	if keep_flag:
-		return image.resize((width, height), Resampling.LANCZOS)
+		res = image.resize((width, height), Resampling.LANCZOS)
+		if progress_callback is not None:
+			progress_callback(1.0)
+		return res
 	foreground = (1.0, 1.0, 1.0, 1.0)
 	background = (0.0, 0.0, 0.0, 1.0)
 	radius = make_radius(pitch, 2 ** 16)
-	surface = ImageSurface(FORMAT_ARGB32, width, height)
+	surface = ImageSurface(Format.ARGB32, width, height)
 	context = Context(surface)
 	pattern = context.get_source()
 	pattern.set_filter(Filter.BEST)
 	context.set_antialias(Antialias.GRAY)
-	context.set_operator(OPERATOR_SOURCE)
+	context.set_operator(Operator.SOURCE)
 	context.set_source_rgba(*background)
 	context.rectangle(0, 0, width, height)
 	context.fill()
 	context.set_source_rgba(*foreground)
-	for x, y, color in halftone_dots(image, pitch, angle, blur, resampler):
+	for x, y, color in halftone_dots(image, pitch, angle, blur, resampler, progress_callback=progress_callback):
 		r = radius(round(color * (2 ** 16 - 1))) * scale
 		context.arc(x * scale, y * scale, r, 0, 2 * pi)
 		context.fill()
 	return Image.frombuffer("RGBA", (width, height), surface.get_data(), "raw", "RGBA", 0, 1).getchannel("G")
 
 # グレースケールの画像を網点化した画像を返す
-def halftone_grayscale_image(image, pitch, angle=45, scale=1.0, blur=None, resampler="lanczos2", keep_flag=False, preserve_profile=True):
+def halftone_grayscale_image(image, pitch, angle=45, scale=1.0, blur=None, resampler="lanczos2", keep_flag=False, preserve_profile=True, progress_callback=None):
 	inverted = ImageOps.invert(image)
-	halftone = halftone_image(inverted, pitch, angle, scale, blur, resampler, keep_flag)
+	halftone = halftone_image(inverted, pitch, angle, scale, blur, resampler, keep_flag, progress_callback=progress_callback)
 	result = ImageOps.invert(halftone)
 	if preserve_profile and image.info.get("icc_profile") is not None:
 		result.info.update(icc_profile=image.info.get("icc_profile"))
 	return result
 
 # RGB の画像を網点化した画像を返す
-def halftone_rgb_image(image, pitch, angles=(15, 75, 30), scale=1.0, blur=None, resampler="lanczos2", keep_flags=(False, False, False), preserve_profile=True):
+def halftone_rgb_image(image, pitch, angles=(15, 75, 30), scale=1.0, blur=None, resampler="lanczos2", keep_flags=(False, False, False), preserve_profile=True, progress_callbacks=(None, None, None)):
 	r, g, b = image.split()
-	red = halftone_grayscale_image(r, pitch, angles[0], scale, blur, resampler, keep_flags[0], False)
-	green = halftone_grayscale_image(g, pitch, angles[1], scale, blur, resampler, keep_flags[1], False)
-	blue = halftone_grayscale_image(b, pitch, angles[2], scale, blur, resampler, keep_flags[2], False)
+	red = halftone_grayscale_image(r, pitch, angles[0], scale, blur, resampler, keep_flags[0], False, progress_callback=progress_callbacks[0])
+	green = halftone_grayscale_image(g, pitch, angles[1], scale, blur, resampler, keep_flags[1], False, progress_callback=progress_callbacks[1])
+	blue = halftone_grayscale_image(b, pitch, angles[2], scale, blur, resampler, keep_flags[2], False, progress_callback=progress_callbacks[2])
 	halftone = Image.merge("RGB", [red, green, blue])
 	if preserve_profile and image.info.get("icc_profile") is not None:
 		halftone.info.update(icc_profile=image.info.get("icc_profile"))
 	return halftone
 
 # CMYK の画像を網点化した画像を返す
-def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=None, resampler="lanczos2", keep_flags=(False, False, False, False), preserve_profile=True):
+def halftone_cmyk_image(image, pitch, angles=(15, 75, 30, 45), scale=1.0, blur=None, resampler="lanczos2", keep_flags=(False, False, False, False), preserve_profile=True, progress_callbacks=(None, None, None, None)):
 	c, m, y, k = image.split()
-	cyan = halftone_image(c, pitch, angles[0], scale, blur, resampler, keep_flags[0])
-	magenta = halftone_image(m, pitch, angles[1], scale, blur, resampler, keep_flags[1])
-	yellow = halftone_image(y, pitch, angles[2], scale, blur, resampler, keep_flags[2])
-	key = halftone_image(k, pitch, angles[3], scale, blur, resampler, keep_flags[3])
+	cyan = halftone_image(c, pitch, angles[0], scale, blur, resampler, keep_flags[0], progress_callback=progress_callbacks[0])
+	magenta = halftone_image(m, pitch, angles[1], scale, blur, resampler, keep_flags[1], progress_callback=progress_callbacks[1])
+	yellow = halftone_image(y, pitch, angles[2], scale, blur, resampler, keep_flags[2], progress_callback=progress_callbacks[2])
+	key = halftone_image(k, pitch, angles[3], scale, blur, resampler, keep_flags[3], progress_callback=progress_callbacks[3])
 	halftone = Image.merge("CMYK", [cyan, magenta, yellow, key])
 	if preserve_profile and image.info.get("icc_profile") is not None:
 		halftone.info.update(icc_profile=image.info.get("icc_profile"))
