@@ -11,10 +11,10 @@ maintainers = [
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "License :: OSI Approved :: GNU Affero General Public License v3",
   "Topic :: Multimedia :: Graphics",
   "Topic :: Multimedia :: Graphics :: Graphics Conversion",
   "License :: Freeware",
+  "License :: OSI Approved :: GNU Affero General Public License v3",
 ]
 dynamic = ["version"]
 dependencies = [
@@ -28,7 +28,7 @@ dependencies = [
 dev = ["pip", "setuptools", "build", "twine"]
 
 [project.scripts]
-halftonecv = "halftonecv.main:main"
+halftonecv = "halftonecv.cli:main"
 
 [project.urls]
 homepage = "https://github.com/curegit/halftone-converter"

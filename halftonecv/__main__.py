@@ -1,5 +1,5 @@
 import sys
-from .main import main
+from .cli import main
 
 # エントリポイントを保護
 if __name__ == "__main__":
