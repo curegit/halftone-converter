@@ -287,6 +287,12 @@ don't convert K channels to halftones
 
 ![Todai Ramen](images/lighthouse-ramen.png)
 
+### CMYK (Japan Color 2011 Coated)
+
+Example with user's custom ICC
+
+![Anime Girl](images/anime-girl.png)
+
 ### Gray
 
 ![Chevrolet Opala 87](images/chevrolet-opala.png)
