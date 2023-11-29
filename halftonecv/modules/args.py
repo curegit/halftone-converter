@@ -26,6 +26,13 @@ def nonempty(str):
 	else:
 		raise ValueError()
 
+# 入力ファイルパスを受け入れる変換関数
+def fileinput(str):
+	# STDIN (-) を None で返す
+	if str == "-":
+		return None
+	return nonempty(str)
+
 # ファイル名の一部を受け入れる変換関数
 def filenameseg(str):
 	if str == basename(str):
