@@ -25,7 +25,7 @@ def main():
 		parser.add_argument("-g", "--glob", action="store_true", help="interpret FILE values as glob patterns")
 		parser.add_argument("-f", "--force", action="store_true", help="overwrite existing files by outputs")
 		dest_group = parser.add_mutually_exclusive_group()
-		dest_group.add_argument("-1", "--stdout", action="store_true", help="send output to standard output")
+		dest_group.add_argument("-O", "--stdout", action="store_true", help="send output to standard output")
 		dest_group.add_argument("-d", "--directory", metavar="DIR", type=nonempty, default=".", help="save output images in DIR directory")
 		parser.add_argument("-P", "--prefix", type=filenameseg, default="", help="specify a prefix string of output filenames")
 		parser.add_argument("-S", "--suffix", type=filenameseg, default="-halftone", help="specify a suffix string of output filenames")

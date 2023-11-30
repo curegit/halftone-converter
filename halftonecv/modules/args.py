@@ -28,7 +28,7 @@ def nonempty(str):
 
 # 入力ファイルパスを受け入れる変換関数
 def fileinput(str):
-	# STDIN (-) を None で返す
+	# stdin (-) を None で返す
 	if str == "-":
 		return None
 	return nonempty(str)
