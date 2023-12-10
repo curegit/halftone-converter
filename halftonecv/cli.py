@@ -208,7 +208,7 @@ def main():
 					BarColumn(bar_width=50),
 					TaskProgressColumn(),
 				)
-				with contextlib.nullcontext(None) if args.quiet else Progress(*cols, console=Console(stderr=True), redirect_stderr=False, redirect_stdout=False) as progress:
+				with contextlib.nullcontext(None) if args.quiet else Progress(*cols, console=Console(stderr=True)) as progress:
 					if target.mode == "L":
 						if progress is None:
 							fn = None
