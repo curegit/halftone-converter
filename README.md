@@ -41,7 +41,7 @@ halftonecv input.png
 The main program can be invoked either through the `halftonecv` command or through the Python main module option `python3 -m halftonecv`.
 It has command line interface as shown below.
 
-```sh
+```txt
 usage: halftonecv [-h] [-q] [-e] [-g] [-f] [-O | -d DIR] [-P PREFIX] [-S SUFFIX]
                   [-E [START]] [-p PX] [-x SCALE] [-b [{box,gaussian}]]
                   [-B PX] [-F {nearest,linear,lanczos2,lanczos3,spline36}]
