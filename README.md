@@ -41,8 +41,8 @@ halftonecv input.png
 The main program can be invoked either through the `halftonecv` command or through the Python main module option `python3 -m halftonecv`.
 It has command line interface as shown below.
 
-```sh
-usage: halftonecv [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
+```txt
+usage: halftonecv [-h] [-q] [-e] [-g] [-f] [-O | -d DIR] [-P PREFIX] [-S SUFFIX]
                   [-E [START]] [-p PX] [-x SCALE] [-b [{box,gaussian}]]
                   [-B PX] [-F {nearest,linear,lanczos2,lanczos3,spline36}]
                   [-A DEG] [-t DEG DEG DEG] [-a DEG DEG DEG DEG]
@@ -62,6 +62,8 @@ usage: halftonecv [-h] [-q] [-e] [-g] [-f] [-d DIR] [-P PREFIX] [-S SUFFIX]
 #### FILE
 
 describe input image files (required), can be multiple
+
+Pass `-` to specify standard input as input.
 
 Input images' formats are limited to what Pillow can read.
 Also, their color spaces must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, transparent images), or CMYK.
@@ -95,6 +97,12 @@ This glob function will NOT include hidden files or directories.
 overwrite existing files by outputs
 
 By default, an alternate filename will be used if the original filename conflicts.
+
+#### -O, --stdout
+
+send output to standard output
+
+Only one image can be input when using this option.
 
 #### -d DIR, --directory DIR
 

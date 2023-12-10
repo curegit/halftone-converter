@@ -1,11 +1,13 @@
+import sys
 import contextlib
 from time import time
 from glob import glob
 from os.path import isfile
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from PIL import Image, ImageCms
+from rich.console import Console
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
-from .modules.args import positive, rate, nonempty, filenameseg, choice, intent
+from .modules.args import positive, rate, nonempty, fileinput, filenameseg, choice, intent
 from .modules.utils import eprint, mkdirp, filepath, filerelpath, purefilename, altfilepath
 from .modules.color import make_profile_transform, make_fake_transforms
 from .modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_cmyk_image
@@ -17,12 +19,14 @@ def main():
 	try:
 		# コマンドライン引数をパース
 		parser = ArgumentParser(prog="halftonecv", allow_abbrev=False, formatter_class=ArgumentDefaultsHelpFormatter, description="Halftone Converter: an image converter to generate halftone images")
-		parser.add_argument("images", metavar="FILE", type=nonempty, nargs="+", help="describe input image files")
+		parser.add_argument("images", metavar="FILE", type=fileinput, nargs="+", help="describe input image files (pass '-' to specify stdin)")
 		parser.add_argument("-q", "--quiet", action="store_true", help="suppress non-error messages")
 		parser.add_argument("-e", "--exit", action="store_true", help="stop immediately by an error even if jobs remain")
 		parser.add_argument("-g", "--glob", action="store_true", help="interpret FILE values as glob patterns")
 		parser.add_argument("-f", "--force", action="store_true", help="overwrite existing files by outputs")
-		parser.add_argument("-d", "--directory", metavar="DIR", type=nonempty, default=".", help="save output images in DIR directory")
+		dest_group = parser.add_mutually_exclusive_group()
+		dest_group.add_argument("-O", "--stdout", action="store_true", help="send output to standard output")
+		dest_group.add_argument("-d", "--directory", metavar="DIR", type=nonempty, default=".", help="save output images in DIR directory")
 		parser.add_argument("-P", "--prefix", type=filenameseg, default="", help="specify a prefix string of output filenames")
 		parser.add_argument("-S", "--suffix", type=filenameseg, default="-halftone", help="specify a suffix string of output filenames")
 		parser.add_argument("-E", "--enumerate", metavar="START", type=int, nargs="?", const=1, help="use consecutive numbers as output filenames")
@@ -124,30 +128,42 @@ def main():
 			Image.MAX_IMAGE_PIXELS = None
 
 		# 処理対象ファイルをリスティング
+		images = [i for i in args.images if i is not None]
 		if args.glob:
 			input_images = []
-			for i in args.images:
+			for i in images:
 				input_images += [f for f in glob(i, recursive=True) if isfile(f)]
 			input_images = list(dict.fromkeys(input_images))
 		else:
-			input_images = args.images
+			input_images = images
+		if None in args.images:
+			input_images = [None] + input_images
 		n = len(input_images)
+
+		# 複数の処理ファイルと stdout への出力が指定されている場合はエラー
+		if args.stdout and n > 1:
+			raise ValueError("Multiple input files cannot be processed when output is set to stdout")
 
 		# 処理対象のファイル数を表示
 		if not args.quiet:
 			if n == 0:
-				print("No files matched")
+				eprint("No files matched")
 			elif n == 1:
-				print("One processing target has been queued")
+				eprint("One processing target has been queued")
 			else:
-				print(f"{n} processing targets have been queued")
+				eprint(f"{n} processing targets have been queued")
 
 		# 処理のメインループ
 		for i, f in enumerate(input_images):
 			t = time()
 			try:
 				# 画像を開く
-				img = Image.open(f)
+				if f is None:
+					fname = "(stdin)"
+					img = Image.open(sys.stdin.buffer)
+				else:
+					fname = f
+					img = Image.open(f)
 				if img.mode == "LA":
 					img = img.convert("L")
 				elif img.mode == "RGBA":
@@ -192,7 +208,7 @@ def main():
 					BarColumn(bar_width=50),
 					TaskProgressColumn(),
 				)
-				with contextlib.nullcontext(None) if args.quiet else Progress(*cols) as progress:
+				with contextlib.nullcontext(None) if args.quiet else Progress(*cols, console=Console(stderr=True)) as progress:
 					if target.mode == "L":
 						if progress is None:
 							fn = None
@@ -260,23 +276,33 @@ def main():
 				if args.discard:
 					if complete.info.get("icc_profile"):
 						complete.info.pop("icc_profile")
-				# 出力ディレクトリを作る
-				mkdirp(args.directory)
+				# 標準出力へ流す
+				if args.stdout:
+					name = "(stdout)"
+					if complete.mode == "CMYK" or args.tiff:
+						path = f"{name} [TIFF]"
+						complete.save(sys.stdout.buffer, format="TIFF")
+					else:
+						path = f"{name} [PNG]"
+						complete.save(sys.stdout.buffer, format="PNG")
 				# ファイルへ保存する
-				if args.enumerate is None:
-					name = args.prefix + purefilename(f) + args.suffix
 				else:
-					name = args.prefix + f"{args.enumerate + i}" + args.suffix
-				if complete.mode == "CMYK" or args.tiff:
-					path = filepath(args.directory, name, "tiff")
-				else:
-					path = filepath(args.directory, name, "png")
-				if not args.force:
-					path = altfilepath(path, suffix="+")
-				complete.save(path)
+					# 出力ディレクトリを作る
+					mkdirp(args.directory)
+					if args.enumerate is None:
+						name = args.prefix + purefilename(fname) + args.suffix
+					else:
+						name = args.prefix + f"{args.enumerate + i}" + args.suffix
+					if complete.mode == "CMYK" or args.tiff:
+						path = filepath(args.directory, name, "tiff")
+					else:
+						path = filepath(args.directory, name, "png")
+					if not args.force:
+						path = altfilepath(path, suffix="+")
+					complete.save(path)
 			# エラーを報告する
 			except Exception as e:
-				eprint(f"{i + 1}/{n} error: {f}")
+				eprint(f"{i + 1}/{n} error: {fname}")
 				eprint(e)
 				exit_code = 1
 				if args.exit:
@@ -285,7 +311,7 @@ def main():
 			else:
 				dt = time() - t
 				if not args.quiet:
-					print(f"{i + 1}/{n} done: {f} -> {path} ({dt:.1f} sec)")
+					eprint(f"{i + 1}/{n} done: {fname} -> {path} ({dt:.1f} sec)")
 		return exit_code
 
 	except KeyboardInterrupt:
