@@ -17,9 +17,11 @@ def main():
 	exit_code = 0
 
 	try:
+		from . import __version__ as version
 		# コマンドライン引数をパース
 		parser = ArgumentParser(prog="halftonecv", allow_abbrev=False, formatter_class=ArgumentDefaultsHelpFormatter, description="Halftone Converter: an image converter to generate halftone images")
 		parser.add_argument("images", metavar="FILE", type=fileinput, nargs="+", help="describe input image files (pass '-' to specify stdin)")
+		parser.add_argument("-v", "--version", action="version", version=version)
 		parser.add_argument("-q", "--quiet", action="store_true", help="suppress non-error messages")
 		parser.add_argument("-e", "--exit", action="store_true", help="stop immediately by an error even if jobs remain")
 		parser.add_argument("-g", "--glob", action="store_true", help="interpret FILE values as glob patterns")
