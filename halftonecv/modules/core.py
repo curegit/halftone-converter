@@ -21,7 +21,7 @@ def make_occupancy(pitch):
 	return occupancy
 
 # 二分法による求根アルゴリズム
-def bisection(f, x1, x2, eps):
+def bisection(f, x1, x2, eps=float_info.epsilon):
 	while True:
 		x = (x1 + x2) / 2
 		if abs(x1 - x2) <= eps + eps * abs(x):
@@ -45,7 +45,7 @@ def radius_table(pitch, depth):
 	while color < depth - 1:
 		f = make_occupancy(pitch)
 		y = lambda x: f(x) - occupancy
-		r = bisection(y, r, rmax, float_info.epsilon)
+		r = bisection(y, r, rmax)
 		yield r
 		color += 1
 		occupancy = color / (depth - 1)
