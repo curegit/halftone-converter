@@ -245,7 +245,7 @@ don't embed ICC profiles in output images
 
 #### --naive, --naive-transform
 
-use approximate color space conversion algorithm (naive transform) instead of ICC-based transform
+use approximate color space conversion algorithm (naive transform) instead of ICC profile-based transform
 
 #### --gamma-correction
 
@@ -301,7 +301,7 @@ don't convert K channels to halftones
 
 ### CMYK (Japan Color 2011 Coated)
 
-Example with user's custom ICC
+Example with user's custom ICC profile
 
 ![Anime Girl](images/anime-girl.png)
 
