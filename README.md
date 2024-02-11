@@ -166,11 +166,11 @@ arrange dots by `DEG` degrees in Gray channel
 
 #### -t DEG DEG DEG, --Angles DEG DEG DEG, --rgb-angles DEG DEG DEG
 
-arrange dots by `DEG` degrees in each RGB channels
+arrange dots by `DEG` degrees in each RGB channels respectively
 
 #### -a DEG DEG DEG DEG, --angles DEG DEG DEG DEG, --cmyk-angles DEG DEG DEG DEG
 
-arrange dots by `DEG` degrees in each CMYK channels
+arrange dots by `DEG` degrees in each CMYK channels respectively
 
 #### -m {auto,gray,rgb,cmyk}, --mode {auto,gray,rgb,cmyk}
 
@@ -249,7 +249,7 @@ use approximate color space conversion algorithm (naive transform) instead of IC
 
 #### --gamma-correction
 
-apply gamma correction of sRGB for RGB-CMYK conversion when the naive transform is used
+apply sRGB gamma correction for RGB-CMYK conversion when the naive transform is used
 
 #### --key RATE, --key-from RATE
 
