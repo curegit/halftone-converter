@@ -318,5 +318,5 @@ def main():
 
 	except KeyboardInterrupt:
 		eprint("KeyboardInterrupt")
-		exit_code = 130
+		exit_code = 128 + 2
 		return exit_code
