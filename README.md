@@ -63,7 +63,7 @@ usage: halftonecv [-h] [-v] [-q] [-e] [-g] [-f] [-O | -d DIR] [-P PREFIX] [-S SU
 
 describe input image files (required), can be multiple
 
-Pass `-` to specify standard input as input.
+Pass `-` to specify standard input.
 
 Input images' formats are limited to what Pillow can read.
 Also, their color mode must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, transparent images), or CMYK.
@@ -86,7 +86,7 @@ suppress non-error messages
 
 stop the program immediately by an error even if jobs remain
 
-By default, it skips failed jobs and starts the next one.
+By default, it skips failed jobs (corrupted images, etc.) and starts the next one.
 
 #### -g, --glob
 
@@ -259,7 +259,7 @@ black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive
 
 don't convert any channels to halftones
 
-This is useful for previewing color space transform.
+This is useful for previewing color space transformation.
 
 #### --keep-red
 
