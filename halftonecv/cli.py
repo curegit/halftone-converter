@@ -157,7 +157,7 @@ def main():
 
 		# 処理のメインループ
 		for i, f in enumerate(input_images):
-			t = time()
+			stime = time()
 			try:
 				# 画像を開く
 				if f is None:
@@ -311,7 +311,7 @@ def main():
 					return exit_code
 			# 成功を報告する
 			else:
-				dt = time() - t
+				dt = time() - stime
 				if not args.quiet:
 					eprint(f"{i + 1}/{n} done: {fname} -> {path} ({dt:.1f} sec)")
 		return exit_code
