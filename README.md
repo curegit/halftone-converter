@@ -66,7 +66,7 @@ describe input image files (required), can be multiple
 Pass `-` to specify standard input as input.
 
 Input images' formats are limited to what Pillow can read.
-Also, their color spaces must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, transparent images), or CMYK.
+Also, their color mode must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, transparent images), or CMYK.
 
 ### Optional Arguments
 
