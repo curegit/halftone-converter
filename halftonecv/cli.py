@@ -5,6 +5,7 @@ from glob import glob
 from os.path import isfile
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from PIL import Image, ImageCms
+from PIL.Image import Resampling
 from rich.console import Console
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from .modules.args import positive, rate, nonempty, fileinput, filenameseg, choice, intent
@@ -55,6 +56,7 @@ def main():
 		parser.add_argument("-H", "--allow-huge", action="store_true", help="disable the limitation of input image size")
 		parser.add_argument("--ignore", "--ignore-embedded-profile", action="store_true", help="don't use ICC profiles embedded in input images")
 		parser.add_argument("--discard", "--discard-profile", action="store_true", help="don't embed ICC profiles in output images")
+		parser.add_argument("--opaque", "--discard-alpha", action="store_true", help="drop alpha channel from output")
 		parser.add_argument("--naive", "--naive-transform", action="store_true", help="use approximate conversion algorithm (naive transform) instead of ICC-based transform")
 		parser.add_argument("--gamma-correction", action="store_true", help="apply sRGB gamma correction for RGB-CMYK conversion when the naive transform is used")
 		parser.add_argument("--key", "--key-from", metavar="RATE", type=rate, default=0.5, help="black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used")
@@ -166,13 +168,17 @@ def main():
 				else:
 					fname = f
 					img = Image.open(f)
+				alpha = None
 				if img.mode == "LA":
+					alpha = img.split()[1]
 					img = img.convert("L")
 				elif img.mode == "RGBA":
+					alpha = img.split()[3]
 					img = img.convert("RGB")
 				elif img.mode == "P":
-					bg = Image.new("RGBA", img.size, "White")
-					img = Image.alpha_composite(bg, img.convert("RGBA")).convert("RGB")
+					rgba = img.convert("RGBA")
+					alpha = rgba.split()[3]
+					img = rgba.convert("RGB")
 				if not img.mode in ["L", "RGB", "CMYK"]:
 					raise ValueError("unsupported image type")
 				# ハーフトーンの色空間へ変換する
@@ -274,6 +280,18 @@ def main():
 						complete = halftone
 					else:
 						complete = in_cmyk_rgb(halftone) if same else cmyk_rgb(halftone)
+				# アルファチャンネルを再合成する
+				if alpha is not None and not args.opaque:
+					if complete.mode in ["RGB", "L"]:
+						width, height = complete.size
+						if (width, height) != alpha.size:
+							alpha = alpha.resize((width, height), Resampling.LANCZOS)
+						complete = Image.merge(complete.mode + "A", (*complete.split(), alpha))
+						# 透明ピクセルの色を平坦化
+						if complete.mode == "RGBA":
+							transparent = (255, 255, 255, 0)
+							bg = Image.new("RGBA", complete.size, transparent)
+							complete = Image.alpha_composite(bg, complete)
 				# 必要なら ICC プロファイルを廃棄する
 				if args.discard:
 					if complete.info.get("icc_profile"):

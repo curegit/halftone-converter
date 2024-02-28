@@ -51,7 +51,7 @@ usage: halftonecv [-h] [-v] [-q] [-e] [-g] [-f] [-O | -d DIR] [-P PREFIX] [-S SU
                   [-L GRAY_ICC_FILE] [-l {per,sat,rel,abs,0,1,2,3}]
                   [-R RGB_ICC_FILE] [-r {per,sat,rel,abs,0,1,2,3}]
                   [-C CMYK_ICC_FILE] [-c {per,sat,rel,abs,0,1,2,3}] [-H]
-                  [--ignore] [--discard] [--naive] [--gamma-correction]
+                  [--ignore] [--discard] [--opaque] [--naive] [--gamma-correction]
                   [--key RATE] [-K] [--keep-red] [--keep-green] [--keep-blue]
                   [--keep-cyan] [--keep-magenta] [--keep-yellow] [--keep-key]
                   FILE [FILE ...]
@@ -242,6 +242,10 @@ don't respect ICC profiles embedded in input images
 #### --discard, --discard-profile
 
 don't embed ICC profiles in output images
+
+#### --opaque, --discard-alpha
+
+drop alpha channel from output
 
 #### --naive, --naive-transform
 
