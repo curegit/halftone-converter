@@ -35,7 +35,7 @@ def main():
 		parser.add_argument("-E", "--enumerate", metavar="START", type=int, nargs="?", const=1, help="use consecutive numbers as output filenames")
 		parser.add_argument("-p", "--pitch", "--interval", metavar="PX", type=positive, default=4, help="arrange halftone dots at intervals of PX pixels in input images")
 		parser.add_argument("-x", "-s", "--scale", type=positive, default=1, help="the scale factor of output images to input images")
-		parser.add_argument("-b", "--blur", type=choice, choices=["box", "gaussian"], nargs="?", const="gaussian", help="apply blur effect (if no blur type is specified, gaussian is used)")
+		parser.add_argument("-b", "--blur", type=choice, choices=["box", "gaussian"], nargs="?", const="gaussian", help="apply blur effect to source images (if no blur type is specified, gaussian is used)")
 		parser.add_argument("-B", "--blur-radius", metavar="PX", type=positive, help="specify blur radius (if not specified, half of the pitch is used)")
 		parser.add_argument("-F", "--resample", type=choice, choices=["nearest", "linear", "lanczos2", "lanczos3", "spline36"], default="linear", help="resampling method for determining dot size")
 		parser.add_argument("-A", "--angle", "--gray-angle", metavar="DEG", dest="gray_angle", type=float, default=45, help="arrange dots by DEG degrees in Gray channel")

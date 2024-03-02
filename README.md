@@ -144,7 +144,7 @@ The default value is 1.0.
 
 #### -b [{box,gaussian}], --blur [{box,gaussian}]
 
-apply blur effect
+apply blur effect to source images
 
 If no blur type is specified, gaussian is used.
 
