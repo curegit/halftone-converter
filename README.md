@@ -35,7 +35,7 @@ This application takes image files as input and outputs halftones as image files
 ### Quickstart
 
 ```sh
-halftonecv input.png
+halftonecv INPUT.png
 ```
 
 The main program can be invoked either through the `halftonecv` command or through the Python main module option `python3 -m halftonecv`.
@@ -65,8 +65,8 @@ describe input image files (required), can be multiple
 
 Pass `-` to specify standard input.
 
-Input images' formats are limited to what Pillow can read.
-Also, their color mode must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, transparent images), or CMYK.
+Input images must be in a format that Pillow can read.
+Also, their color mode must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, palette based images), or CMYK.
 
 ### Optional Arguments
 
