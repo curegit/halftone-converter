@@ -314,12 +314,19 @@ def main():
 					else:
 						name = args.prefix + f"{args.enumerate + i}" + args.suffix
 					if complete.mode == "CMYK" or args.tiff:
+						fmt = "TIFF"
 						path = filepath(args.directory, name, "tiff")
 					else:
+						fmt = "PNG"
 						path = filepath(args.directory, name, "png")
-					if not args.force:
-						path = altfilepath(path, suffix="+")
-					complete.save(path)
+					while True:
+						try:
+							with open(path, "wb" if args.force else "xb") as fp:
+								complete.save(fp, format=fmt)
+							break
+						except FileExistsError:
+							path = altfilepath(path, suffix="+")
+
 			# エラーを報告する
 			except Exception as e:
 				eprint(f"{i + 1}/{n} error: {fname}")
