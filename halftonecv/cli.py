@@ -32,7 +32,7 @@ def main():
 		dest_group.add_argument("-d", "--directory", metavar="DIR", type=nonempty, default=".", help="save output images in DIR directory")
 		parser.add_argument("-P", "--prefix", type=filenameseg, default="", help="specify a prefix string of output filenames")
 		parser.add_argument("-S", "--suffix", type=filenameseg, default="-halftone", help="specify a suffix string of output filenames")
-		parser.add_argument("-E", "--enumerate", metavar="START", type=int, nargs="?", const=1, help="use consecutive numbers as output filenames")
+		parser.add_argument("-E", "--enumerate", metavar="START", default=False, type=int, nargs="?", const=1, help="use consecutive numbers as output filenames [START=1]")
 		parser.add_argument("-p", "--pitch", "--interval", metavar="PX", type=positive, default=4, help="arrange halftone dots at intervals of PX pixels in input images")
 		parser.add_argument("-x", "-s", "--scale", type=positive, default=1, help="the scale factor of output images to input images")
 		parser.add_argument("-b", "--blur", type=choice, choices=["box", "gaussian"], nargs="?", const="gaussian", help="apply blur effect to source images (if no blur type is specified, gaussian is used)")
@@ -309,7 +309,7 @@ def main():
 				else:
 					# 出力ディレクトリを作る
 					mkdirp(args.directory)
-					if args.enumerate is None:
+					if args.enumerate is False:
 						name = args.prefix + purefilename(fname) + args.suffix
 					else:
 						name = args.prefix + f"{args.enumerate + i}" + args.suffix
