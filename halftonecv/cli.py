@@ -1,4 +1,5 @@
 import sys
+import os
 import contextlib
 from time import time
 from glob import glob
@@ -15,6 +16,7 @@ from .modules.core import halftone_grayscale_image, halftone_rgb_image, halftone
 
 # メイン関数
 def main():
+	broken_pipe = False
 	exit_code = 0
 
 	try:
@@ -301,10 +303,17 @@ def main():
 					name = "(stdout)"
 					if complete.mode == "CMYK" or args.tiff:
 						path = f"{name} [TIFF]"
-						complete.save(sys.stdout.buffer, format="TIFF")
+						fmt = "TIFF"
 					else:
 						path = f"{name} [PNG]"
-						complete.save(sys.stdout.buffer, format="PNG")
+						fmt = "PNG"
+					try:
+						complete.save(sys.stdout.buffer, format=fmt)
+					except BrokenPipeError:
+						broken_pipe = True
+						exit_code = 128 + 13
+						devnull = os.open(os.devnull, os.O_WRONLY)
+						os.dup2(devnull, sys.stdout.fileno())
 				# ファイルへ保存する
 				else:
 					# 出力ディレクトリを作る
@@ -338,7 +347,10 @@ def main():
 			else:
 				dt = time() - stime
 				if not args.quiet:
-					eprint(f"{i + 1}/{n} done: {fname} -> {path} ({dt:.1f} sec)")
+					if broken_pipe:
+						eprint(f"{i + 1}/{n} sigpipe: {fname} -> {path} ({dt:.1f} sec)")
+					else:
+						eprint(f"{i + 1}/{n} done: {fname} -> {path} ({dt:.1f} sec)")
 		return exit_code
 
 	except KeyboardInterrupt:
