@@ -9,11 +9,8 @@ maintainers = [
   {name = "curegit", email = "contact@curegit.jp"}
 ]
 classifiers = [
-  "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Topic :: Multimedia :: Graphics",
   "Topic :: Multimedia :: Graphics :: Graphics Conversion",
-  "License :: Freeware",
   "License :: OSI Approved :: GNU Affero General Public License v3",
 ]
 dynamic = ["version"]
