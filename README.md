@@ -30,9 +30,9 @@ Note that [Pycairo requires Cairo core library](https://pycairo.readthedocs.io/e
 
 ## Usage
 
-This application takes image files as input and outputs halftones as image files.
-
 ### Quickstart
+
+This application takes image files as input and outputs halftones as image files.
 
 ```sh
 halftonecv INPUT.png
@@ -42,7 +42,8 @@ The main program can be invoked either through the `halftonecv` command or throu
 It has command line interface as shown below.
 
 ```txt
-usage: halftonecv [-h] [-v] [-q] [-V] [-e] [-g] [-f] [-O | -d DIR] [-P PREFIX] [-S SUFFIX]
+usage: halftonecv [-h] [-v] [-q] [-V] [-e] [-g]
+                  [-f] [-O | -d DIR] [-P PREFIX] [-S SUFFIX]
                   [-E [START]] [-p PX] [-x SCALE] [-b [{box,gaussian}]]
                   [-B PX] [-F {nearest,linear,lanczos2,lanczos3,spline36}]
                   [-A DEG] [-t DEG DEG DEG] [-a DEG DEG DEG DEG]
