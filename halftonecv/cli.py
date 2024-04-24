@@ -10,22 +10,27 @@ from PIL.Image import Resampling
 from rich.console import Console
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from .modules.args import positive, rate, nonempty, fileinput, filenameseg, choice, intent
-from .modules.utils import eprint, mkdirp, filepath, filerelpath, purefilename, altfilepath
+from .modules.utils import mkdirp, filepath, filerelpath, purefilename, altfilepath
 from .modules.color import make_profile_transform, make_fake_transforms
 from .modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_cmyk_image
 
-# メイン関数
 def main():
 	broken_pipe = False
 	exit_code = 0
+	console = Console(stderr=True)
+
+	def eprint(*args, **kwargs):
+		console.print(*args, highlight=False, **kwargs)
 
 	try:
 		from . import __version__ as version
+
 		# コマンドライン引数をパース
 		parser = ArgumentParser(prog="halftonecv", allow_abbrev=False, formatter_class=ArgumentDefaultsHelpFormatter, description="Halftone Converter: an image converter to generate halftone images")
 		parser.add_argument("images", metavar="FILE", type=fileinput, nargs="+", help="describe input image files (pass '-' to specify stdin)")
 		parser.add_argument("-v", "--version", action="version", version=version)
 		parser.add_argument("-q", "--quiet", action="store_true", help="suppress non-error messages")
+		parser.add_argument("-V", "--traceback", action="store_true", help="render tracebacks on error")
 		parser.add_argument("-e", "--exit", action="store_true", help="stop immediately by an error even if jobs remain")
 		parser.add_argument("-g", "--glob", action="store_true", help="interpret FILE values as glob patterns")
 		parser.add_argument("-f", "--force", action="store_true", help="overwrite existing files by outputs")
@@ -218,7 +223,7 @@ def main():
 					BarColumn(bar_width=50),
 					TaskProgressColumn(),
 				)
-				with contextlib.nullcontext(None) if args.quiet else Progress(*cols, console=Console(stderr=True)) as progress:
+				with contextlib.nullcontext(None) if args.quiet else Progress(*cols, console=console) as progress:
 					if target.mode == "L":
 						if progress is None:
 							fn = None
@@ -339,7 +344,10 @@ def main():
 			# エラーを報告する
 			except Exception as e:
 				eprint(f"{i + 1}/{n} error: {fname}")
-				eprint(e)
+				if args.traceback:
+					console.print_exception()
+				else:
+					eprint(e)
 				exit_code = 1
 				if args.exit:
 					return exit_code
