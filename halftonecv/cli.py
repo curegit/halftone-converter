@@ -1,5 +1,6 @@
 import sys
 import os
+import io
 import contextlib
 from time import time
 from glob import glob
@@ -171,7 +172,8 @@ def main():
 				# 画像を開く
 				if f is None:
 					fname = "(stdin)"
-					img = Image.open(sys.stdin.buffer)
+					buf = io.BytesIO(sys.stdin.buffer.read())
+					img = Image.open(buf)
 				else:
 					fname = f
 					img = Image.open(f)
@@ -313,7 +315,9 @@ def main():
 						path = f"{name} [PNG]"
 						fmt = "PNG"
 					try:
-						complete.save(sys.stdout.buffer, format=fmt)
+						with io.BytesIO() as buf:
+							complete.save(buf, format=fmt)
+							sys.stdout.buffer.write(buf.getbuffer())
 					except BrokenPipeError:
 						broken_pipe = True
 						exit_code = 128 + 13
