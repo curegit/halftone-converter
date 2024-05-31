@@ -38,6 +38,8 @@ This application takes image files as input and outputs halftones as image files
 halftonecv INPUT.png
 ```
 
+### Synopsis
+
 The main program can be invoked either through the `halftonecv` command or through the Python main module option `python3 -m halftonecv`.
 It has command line interface as shown below.
 
