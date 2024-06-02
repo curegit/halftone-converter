@@ -53,7 +53,7 @@ usage: halftonecv [-h] [-v] [-q] [-V] [-e] [-g]
                   [-G GRAY_ICC_FILE] [-I RGB_ICC_FILE] [-M CMYK_ICC_FILE]
                   [-L GRAY_ICC_FILE] [-l {per,sat,rel,abs,0,1,2,3}]
                   [-R RGB_ICC_FILE] [-r {per,sat,rel,abs,0,1,2,3}]
-                  [-C CMYK_ICC_FILE] [-c {per,sat,rel,abs,0,1,2,3}] [-H]
+                  [-C CMYK_ICC_FILE] [-c {per,sat,rel,abs,0,1,2,3}] [-H] [-X]
                   [--ignore] [--discard] [--opaque] [--naive] [--gamma-correction]
                   [--key RATE] [-K] [--keep-red] [--keep-green] [--keep-blue]
                   [--keep-cyan] [--keep-magenta] [--keep-yellow] [--keep-key]
@@ -241,6 +241,10 @@ disable the limitation of input image size
 
 Be careful in the context of server-side applications.
 This option may make DoS attacks possible (Decompression bomb).
+
+#### -X, --orientation
+
+apply Exif orientation
 
 #### --ignore, --ignore-embedded-profile
 

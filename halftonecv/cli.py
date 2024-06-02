@@ -8,6 +8,7 @@ from os.path import isfile
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from PIL import Image, ImageCms
 from PIL.Image import Resampling
+from PIL.ImageOps import exif_transpose
 from rich.console import Console
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from .modules.args import positive, rate, nonempty, fileinput, filenameseg, choice, intent
@@ -62,6 +63,7 @@ def main():
 		parser.add_argument("-C", "--cmyk-profile", metavar="CMYK_ICC_FILE", type=nonempty, help="specify ICC profile for transform to CMYK images")
 		parser.add_argument("-c", "--cmyk-intent", type=intent, choices=["per", "sat", "rel", "abs", 0, 1, 2, 3], default=1, help="rendering intent for transform to CMYK images")
 		parser.add_argument("-H", "--allow-huge", action="store_true", help="disable the limitation of input image size")
+		parser.add_argument("-X", "--orientation", action="store_true", help="apply Exif orientation")
 		parser.add_argument("--ignore", "--ignore-embedded-profile", action="store_true", help="don't use ICC profiles embedded in input images")
 		parser.add_argument("--discard", "--discard-profile", action="store_true", help="don't embed ICC profiles in output images")
 		parser.add_argument("--opaque", "--discard-alpha", action="store_true", help="drop alpha channel from output")
@@ -177,6 +179,8 @@ def main():
 				else:
 					fname = f
 					img = Image.open(f)
+				if args.orientation:
+					img = exif_transpose(img)
 				alpha = None
 				if img.mode == "LA":
 					alpha = img.split()[1]
