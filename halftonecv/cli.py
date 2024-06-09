@@ -16,7 +16,7 @@ from .modules.utils import mkdirp, filepath, filerelpath, purefilename, altfilep
 from .modules.color import make_profile_transform, make_fake_transforms
 from .modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_cmyk_image
 
-def main():
+def main(*, argv=None, inputs=None, refout=None, nofile=False):
 	broken_pipe = False
 	exit_code = 0
 	console = Console(stderr=True)
@@ -29,7 +29,7 @@ def main():
 
 		# コマンドライン引数をパース
 		parser = ArgumentParser(prog="halftonecv", allow_abbrev=False, formatter_class=ArgumentDefaultsHelpFormatter, description="Halftone Converter: an image converter to generate halftone images")
-		parser.add_argument("images", metavar="FILE", type=fileinput, nargs="+", help="describe input image files (pass '-' to specify stdin)")
+		parser.add_argument("images", metavar="FILE", type=fileinput, nargs=("*" if inputs is not None and len(inputs) > 0 else "+"), help="describe input image files (pass '-' to specify stdin)")
 		parser.add_argument("-v", "--version", action="version", version=version)
 		parser.add_argument("-q", "--quiet", action="store_true", help="suppress non-error messages")
 		parser.add_argument("-V", "--traceback", action="store_true", help="render tracebacks on error")
@@ -78,7 +78,10 @@ def main():
 		parser.add_argument("--keep-magenta", action="store_true", help="don't convert M channels to halftones")
 		parser.add_argument("--keep-yellow", action="store_true", help="don't convert Y channels to halftones")
 		parser.add_argument("--keep-key", action="store_true", help="don't convert K channels to halftones")
-		args = parser.parse_args()
+		if argv is None:
+			args = parser.parse_args()
+		else:
+			args = parser.parse_args(argv)
 
 		# keep フラグの一括セット
 		if args.keep_all:
@@ -152,6 +155,8 @@ def main():
 			input_images = images
 		if None in args.images:
 			input_images = [None] + input_images
+		if inputs is not None:
+			input_images = list(inputs) + input_images
 		n = len(input_images)
 
 		# 複数の処理ファイルと stdout への出力が指定されている場合はエラー
@@ -172,7 +177,11 @@ def main():
 			stime = time()
 			try:
 				# 画像を開く
-				if f is None:
+				if isinstance(f, bytes):
+					fname = "(kwargs)"
+					buf = io.BytesIO(f)
+					img = Image.open(buf)
+				elif f is None:
 					fname = "(stdin)"
 					buf = io.BytesIO(sys.stdin.buffer.read())
 					img = Image.open(buf)
@@ -309,6 +318,11 @@ def main():
 				if args.discard:
 					if complete.info.get("icc_profile"):
 						complete.info.pop("icc_profile")
+				# 参照渡しで返す
+				if callable(refout):
+					buf = io.BytesIO()
+					complete.save(buf, format=("TIFF" if complete.mode == "CMYK" or args.tiff else "PNG"))
+					refout(buf.getvalue())
 				# 標準出力へ流す
 				if args.stdout:
 					name = "(stdout)"
@@ -328,7 +342,7 @@ def main():
 						devnull = os.open(os.devnull, os.O_WRONLY)
 						os.dup2(devnull, sys.stdout.fileno())
 				# ファイルへ保存する
-				else:
+				elif not nofile:
 					# 出力ディレクトリを作る
 					mkdirp(args.directory)
 					if args.enumerate is False:
