@@ -383,6 +383,15 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False):
 						eprint(f"{i + 1}/{n} done: {fname} -> {path} ({dt:.1f} sec)")
 		return exit_code
 
+	except ValueError as e:
+		try:
+			if args.traceback:
+				console.print_exception()
+			else:
+				eprint(e)
+		except NameError:
+			raise e from None
+
 	except KeyboardInterrupt:
 		eprint("KeyboardInterrupt")
 		exit_code = 128 + 2
