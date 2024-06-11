@@ -2,6 +2,7 @@ import sys
 import os
 import io
 import contextlib
+import importlib.resources
 from time import time
 from glob import glob
 from os.path import isfile
@@ -12,9 +13,18 @@ from PIL.ImageOps import exif_transpose
 from rich.console import Console
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from .modules.args import positive, rate, nonempty, fileinput, filenameseg, choice, intent
-from .modules.utils import mkdirp, filepath, filerelpath, purefilename, altfilepath
+from .modules.utils import mkdirp, filepath, purefilename, altfilepath
 from .modules.color import make_profile_transform, make_fake_transforms
 from .modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_cmyk_image
+
+from . import __spec__ as spec
+root = importlib.resources.files(spec.parent if spec is not None else __package__)
+with importlib.resources.as_file(root / "profiles" / "SWOP.icc") as path:
+	default_cmyk_profile = ImageCms.getOpenProfile(str(path))
+with importlib.resources.as_file(root / "profiles" / "sRGB.icc") as path:
+	default_rgb_profile = ImageCms.getOpenProfile(str(path))
+with importlib.resources.as_file(root / "profiles" / "sGray.icc") as path:
+	default_gray_profile = ImageCms.getOpenProfile(str(path))
 
 def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 	broken_pipe = False
@@ -95,27 +105,27 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 
 		# ICC プロファイルを読み込む
 		if args.gray_profile is None:
-			gray_profile = ImageCms.getOpenProfile(filerelpath("profiles/sGray.icc"))
+			gray_profile = default_gray_profile
 		else:
 			gray_profile = ImageCms.getOpenProfile(args.gray_profile)
 		if args.input_gray_profile is None:
-			in_gray_profile = ImageCms.getOpenProfile(filerelpath("profiles/sGray.icc"))
+			in_gray_profile = default_gray_profile
 		else:
 			in_gray_profile = ImageCms.getOpenProfile(args.input_gray_profile)
 		if args.rgb_profile is None:
-			rgb_profile = ImageCms.getOpenProfile(filerelpath("profiles/sRGB.icc"))
+			rgb_profile = default_rgb_profile
 		else:
 			rgb_profile = ImageCms.getOpenProfile(args.rgb_profile)
 		if args.input_rgb_profile is None:
-			in_rgb_profile = ImageCms.getOpenProfile(filerelpath("profiles/sRGB.icc"))
+			in_rgb_profile = default_rgb_profile
 		else:
 			in_rgb_profile = ImageCms.getOpenProfile(args.input_rgb_profile)
 		if args.cmyk_profile is None:
-			cmyk_profile = ImageCms.getOpenProfile(filerelpath("profiles/SWOP.icc"))
+			cmyk_profile = default_cmyk_profile
 		else:
 			cmyk_profile = ImageCms.getOpenProfile(args.cmyk_profile)
 		if args.input_cmyk_profile is None:
-			in_cmyk_profile = ImageCms.getOpenProfile(filerelpath("profiles/SWOP.icc"))
+			in_cmyk_profile = default_cmyk_profile
 		else:
 			in_cmyk_profile = ImageCms.getOpenProfile(args.input_cmyk_profile)
 

@@ -1,6 +1,5 @@
 import os
 import os.path
-import inspect
 
 # ディレクトリが無ければ再帰的に作成する
 def mkdirp(path):
@@ -10,12 +9,6 @@ def mkdirp(path):
 def filepath(dirpath, filename, ext):
 	p = os.path.join(dirpath, filename) + os.extsep + ext
 	return os.path.normpath(p)
-
-# 呼び出し元のスクリプトからの相対パスを構築する
-def filerelpath(relpath):
-	f = inspect.stack()[1].filename
-	d = os.path.dirname(f)
-	return os.path.join(d, relpath)
 
 # 拡張子を含まないファイル名を返す
 def purefilename(path):
