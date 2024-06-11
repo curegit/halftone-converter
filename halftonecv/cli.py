@@ -16,7 +16,7 @@ from .modules.utils import mkdirp, filepath, filerelpath, purefilename, altfilep
 from .modules.color import make_profile_transform, make_fake_transforms
 from .modules.core import halftone_grayscale_image, halftone_rgb_image, halftone_cmyk_image
 
-def main(*, argv=None, inputs=None, refout=None, nofile=False):
+def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 	broken_pipe = False
 	exit_code = 0
 	console = Console(stderr=True)
@@ -393,6 +393,8 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False):
 			raise e from None
 
 	except KeyboardInterrupt:
+		if notrap:
+			raise
 		eprint("KeyboardInterrupt")
 		exit_code = 128 + 2
 		return exit_code
