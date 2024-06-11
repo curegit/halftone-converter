@@ -4,11 +4,16 @@ from sys import float_info
 from PIL import Image, ImageCms
 
 # プロファイル変換の関数を返す
-def make_profile_transform(profiles, modes, intent, prefer_embedded=True):
-	transform = ImageCms.buildTransform(*profiles, *modes, intent)
+def make_profile_transform(profiles, modes, intent, prefer_embedded=True, *, lazy=True):
+	def build():
+		return ImageCms.buildTransform(*profiles, *modes, intent)
+	transform = None if lazy else build()
 	def profile_conversion(image):
+		nonlocal transform
 		maybe_icc = image.info.get("icc_profile")
 		if not prefer_embedded or maybe_icc is None:
+			if transform is None:
+				transform = build()
 			return ImageCms.applyTransform(image, transform)
 		em_profile = ImageCms.ImageCmsProfile(io.BytesIO(maybe_icc))
 		return ImageCms.profileToProfile(image, em_profile, profiles[1], renderingIntent=intent, outputMode=modes[1])
