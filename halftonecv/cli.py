@@ -188,7 +188,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 			try:
 				# 画像を開く
 				if isinstance(f, bytes):
-					fname = "(kwargs)"
+					fname = f"(kwargs[{i}])"
 					buf = io.BytesIO(f)
 					img = Image.open(buf)
 				elif f is None:
