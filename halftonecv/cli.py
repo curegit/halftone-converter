@@ -79,7 +79,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 		parser.add_argument("--opaque", "--discard-alpha", action="store_true", help="drop alpha channel from output")
 		parser.add_argument("--naive", "--naive-transform", action="store_true", help="use approximate conversion algorithm (naive transform) instead of ICC-based transform")
 		parser.add_argument("--gamma-correction", action="store_true", help="apply sRGB gamma correction for RGB-CMYK conversion when the naive transform is used")
-		parser.add_argument("--key", "--key-from", metavar="RATE", type=rate, default=0.5, help="black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used")
+		parser.add_argument("--key", "--key-from", metavar="RATE", dest="key_from", type=rate, default=0.5, help="black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used")
 		parser.add_argument("-K", "--keep-all", action="store_true", help="don't convert any channels to halftones")
 		parser.add_argument("--keep-red", action="store_true", help="don't convert R channels to halftones")
 		parser.add_argument("--keep-green", action="store_true", help="don't convert G channels to halftones")
