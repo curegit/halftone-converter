@@ -4,14 +4,14 @@ description = "An image converter to create high quality halftone images"
 keywords = ["image processing", "halftone", "cmyk colors", "cairo"]
 requires-python = ">=3.9"
 readme = "README.md"
-license = {text = "AGPL-3.0"}
+license = "AGPL-3.0-or-later"
+license-files = ["LICEN[CS]E*"]
 maintainers = [
   {name = "curegit", email = "contact@curegit.jp"}
 ]
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Topic :: Multimedia :: Graphics :: Graphics Conversion",
-  "License :: OSI Approved :: GNU Affero General Public License v3",
 ]
 dynamic = ["version"]
 dependencies = [
@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pip", "setuptools", "build", "twine"]
+dev = ["pip", "setuptools >= 78", "build", "twine"]
 
 [project.scripts]
 halftonecv = "halftonecv.cli:main"
