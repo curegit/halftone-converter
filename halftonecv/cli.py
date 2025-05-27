@@ -399,6 +399,8 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 				console.print_exception()
 			else:
 				eprint(e)
+			exit_code = 2
+			return exit_code
 		except NameError:
 			raise e from None
 
