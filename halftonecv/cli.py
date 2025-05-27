@@ -211,7 +211,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 					rgba = img.convert("RGBA")
 					alpha = rgba.split()[3]
 					img = rgba.convert("RGB")
-				if not img.mode in ["L", "RGB", "CMYK"]:
+				if img.mode not in ["L", "RGB", "CMYK"]:
 					raise ValueError("unsupported image type")
 				# ハーフトーンの色空間へ変換する
 				if img.mode == "L":
