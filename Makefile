@@ -3,11 +3,11 @@
 build: clean
 	python3 -m build
 
-install: build
-	pip3 install .
+install:
+	python3 -m pip install .
 
-devinstall: build
-	pip3 install -e .[dev]
+devinstall:
+	python3 -m pip install -e .[dev]
 
 preview: build
 	python3 -m twine upload -u __token__ --repository-url "https://test.pypi.org/legacy/" dist/*
