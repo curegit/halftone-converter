@@ -27,6 +27,9 @@ dev = ["pip", "setuptools >= 78", "build", "twine"]
 [project.scripts]
 halftonecv = "halftonecv.cli:main"
 
+[project.entry-points.pyinstaller40]
+hook-dirs = "halftonecv:pyinstaller_hooks_dir"
+
 [project.urls]
 homepage = "https://github.com/curegit/halftone-converter"
 repository = "https://github.com/curegit/halftone-converter.git"
