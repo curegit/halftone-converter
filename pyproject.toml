@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pip", "setuptools >= 78", "build", "twine"]
+dev = ["pip", "build", "twine"]
 
 [project.scripts]
 halftonecv = "halftonecv.cli:main"
@@ -35,7 +35,7 @@ homepage = "https://github.com/curegit/halftone-converter"
 repository = "https://github.com/curegit/halftone-converter.git"
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools >= 78"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
