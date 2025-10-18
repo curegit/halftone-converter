@@ -116,7 +116,7 @@ By default, an alternate filename will be used if the original filename conflict
 send output to standard output
 
 Note that only one image can be input when using this option.
-It can be used with a shell redirect to save with an arbitrary name, for example: `halftonecv IN.jpg -O > OUT.png`
+It can be used with a shell redirect to save with an arbitrary name, for example: `halftonecv IN.jpg -O > OUT.png`.
 
 #### -d DIR, --directory DIR
 
