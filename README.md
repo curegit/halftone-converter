@@ -32,10 +32,10 @@ Note that [Pycairo requires Cairo core library](https://pycairo.readthedocs.io/e
 
 ### Quickstart
 
-This application takes image files as input and outputs halftones as image files.
+This application takes image files as input and outputs halftones as PNG image files.
 
 ```sh
-halftonecv INPUT.png
+halftonecv INPUT.jpg
 ```
 
 ### Synopsis
@@ -70,6 +70,8 @@ Pass `-` to specify standard input.
 
 Input images must be in a format that Pillow can read.
 Also, their color mode must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, palette based images), or CMYK.
+
+A `--` is usable to terminate option parsing so remaining arguments are treated as positional arguments.
 
 ### Optional Arguments
 
@@ -113,7 +115,8 @@ By default, an alternate filename will be used if the original filename conflict
 
 send output to standard output
 
-Only one image can be input when using this option.
+Note that only one image can be input when using this option.
+It can be used with a shell redirect to save with an arbitrary name, for example: `halftonecv IN.jpg -O > OUT.png`
 
 #### -d DIR, --directory DIR
 
@@ -193,11 +196,13 @@ color space type to save output images
 The default is `auto`.
 It means that Gray images will be saved as Gray images, and colored images will be saved as RGB images.
 
+Note that CMYK images will be output in TIFF format instead of PNG.
+
 #### -T, --tiff, --out-tiff
 
-save TIFF images instead of PNG images
+output TIFF images instead of PNG images
 
-CMYK images will always be saved in TIFF regardless of this option.
+CMYK images will always be output in TIFF regardless of this option.
 
 #### -G GRAY_ICC_FILE, --input-gray-profile GRAY_ICC_FILE
 

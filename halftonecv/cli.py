@@ -38,7 +38,13 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 		from . import __version__ as version
 
 		# コマンドライン引数をパース
-		parser = ArgumentParser(prog="halftonecv", allow_abbrev=False, formatter_class=ArgumentDefaultsHelpFormatter, description="Halftone Converter: an image converter to generate halftone images")
+		parser = ArgumentParser(
+			prog="halftonecv",
+			allow_abbrev=False,
+			formatter_class=ArgumentDefaultsHelpFormatter,
+			description="Halftone Converter: an image converter to generate halftone images",
+			epilog="A '--' is usable to terminate option parsing so remaining arguments are treated as positional arguments.",
+		)
 		parser.add_argument("images", metavar="FILE", type=fileinput, nargs=("*" if inputs is not None and len(inputs) > 0 else "+"), help="describe input image files (pass '-' to specify stdin)")
 		parser.add_argument("-v", "--version", action="version", version=version)
 		parser.add_argument("-q", "--quiet", action="store_true", help="suppress non-error messages")
@@ -62,7 +68,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 		parser.add_argument("-a", "--angles", "--cmyk-angles", metavar="DEG", dest="cmyk_angles", type=float, nargs=4, default=(15, 75, 30, 45), help="arrange dots by DEG degrees in each CMYK channels respectively")
 		parser.add_argument("-m", "--mode", type=choice, choices=["auto", "gray", "rgb", "cmyk"], default="auto", help="color space type to generate halftones")
 		parser.add_argument("-o", "--output", type=choice, choices=["auto", "gray", "rgb", "cmyk"], default="auto", help="color space type to save output images")
-		parser.add_argument("-T", "--tiff", "--out-tiff", action="store_true", help="save TIFF images instead of PNG images")
+		parser.add_argument("-T", "--tiff", "--out-tiff", action="store_true", help="output TIFF images instead of PNG images")
 		parser.add_argument("-G", "--input-gray-profile", metavar="GRAY_ICC_FILE", type=nonempty, help="specify ICC profile for input Gray images")
 		parser.add_argument("-I", "--input-rgb-profile", metavar="RGB_ICC_FILE", type=nonempty, help="specify ICC profile for input RGB images")
 		parser.add_argument("-M", "--input-cmyk-profile", metavar="CMYK_ICC_FILE", type=nonempty, help="specify ICC profile for input CMYK images")
