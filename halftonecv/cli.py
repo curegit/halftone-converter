@@ -43,7 +43,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 			allow_abbrev=False,
 			formatter_class=ArgumentDefaultsHelpFormatter,
 			description="Halftone Converter: an image converter to generate halftone images",
-			epilog="A '--' is usable to terminate option parsing so remaining arguments are treated as positional arguments.",
+			epilog="'--' can be used to terminate option parsing so remaining arguments are treated as positional arguments.",
 		)
 		parser.add_argument("images", metavar="FILE", type=fileinput, nargs=("*" if inputs is not None and len(inputs) > 0 else "+"), help="describe input image files (pass '-' to specify stdin)")
 		parser.add_argument("-v", "--version", action="version", version=version)
@@ -51,7 +51,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 		parser.add_argument("-V", "--traceback", action="store_true", help="render tracebacks on error")
 		parser.add_argument("-e", "--exit", action="store_true", help="stop immediately by an error even if jobs remain")
 		parser.add_argument("-g", "--glob", action="store_true", help="interpret FILE values as glob patterns")
-		parser.add_argument("-f", "--force", action="store_true", help="overwrite existing files by outputs")
+		parser.add_argument("-f", "--force", action="store_true", help="overwrite existing files with the output")
 		dest_group = parser.add_mutually_exclusive_group()
 		dest_group.add_argument("-O", "--stdout", action="store_true", help="send output to standard output")
 		dest_group.add_argument("-d", "--directory", metavar="DIR", type=nonempty, default=".", help="save output images in DIR directory")
@@ -63,9 +63,9 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 		parser.add_argument("-b", "--blur", type=choice, choices=["box", "gaussian"], nargs="?", const="gaussian", help="apply blur effect to source images (if no blur type is specified, gaussian is used)")
 		parser.add_argument("-B", "--blur-radius", metavar="PX", type=positive, help="specify blur radius (if not specified, half of the pitch is used)")
 		parser.add_argument("-F", "--resample", type=choice, choices=["nearest", "linear", "lanczos2", "lanczos3", "spline36"], default="linear", help="resampling method for determining dot size")
-		parser.add_argument("-A", "--angle", "--gray-angle", metavar="DEG", dest="gray_angle", type=float, default=45, help="arrange dots by DEG degrees in Gray channel")
-		parser.add_argument("-t", "--Angles", "--rgb-angles", metavar="DEG", dest="rgb_angles", type=float, nargs=3, default=(15, 75, 30), help="arrange dots by DEG degrees in each RGB channels respectively")
-		parser.add_argument("-a", "--angles", "--cmyk-angles", metavar="DEG", dest="cmyk_angles", type=float, nargs=4, default=(15, 75, 30, 45), help="arrange dots by DEG degrees in each CMYK channels respectively")
+		parser.add_argument("-A", "--angle", "--gray-angle", metavar="DEG", dest="gray_angle", type=float, default=45, help="arrange dots by DEG degrees in the Gray channel")
+		parser.add_argument("-t", "--Angles", "--rgb-angles", metavar="DEG", dest="rgb_angles", type=float, nargs=3, default=(15, 75, 30), help="arrange dots by DEG degrees in each RGB channel respectively")
+		parser.add_argument("-a", "--angles", "--cmyk-angles", metavar="DEG", dest="cmyk_angles", type=float, nargs=4, default=(15, 75, 30, 45), help="arrange dots by DEG degrees in each CMYK channel respectively")
 		parser.add_argument("-m", "--mode", type=choice, choices=["auto", "gray", "rgb", "cmyk"], default="auto", help="color space type to generate halftones")
 		parser.add_argument("-o", "--output", type=choice, choices=["auto", "gray", "rgb", "cmyk"], default="auto", help="color space type to save output images")
 		parser.add_argument("-T", "--tiff", "--out-tiff", action="store_true", help="output TIFF images instead of PNG images")
@@ -85,7 +85,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 		parser.add_argument("--opaque", "--discard-alpha", action="store_true", help="drop alpha channel from output")
 		parser.add_argument("--naive", "--naive-transform", action="store_true", help="use approximate conversion algorithm (naive transform) instead of ICC-based transform")
 		parser.add_argument("--gamma-correction", action="store_true", help="apply sRGB gamma correction for RGB-CMYK conversion when the naive transform is used")
-		parser.add_argument("--key", "--key-from", metavar="RATE", dest="key_from", type=rate, default=0.5, help="black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used")
+		parser.add_argument("--key", "--key-from", metavar="RATE", dest="key_from", type=rate, default=0.5, help="black component threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used")
 		parser.add_argument("-K", "--keep-all", action="store_true", help="don't convert any channels to halftones")
 		parser.add_argument("--keep-red", action="store_true", help="don't convert R channels to halftones")
 		parser.add_argument("--keep-green", action="store_true", help="don't convert G channels to halftones")

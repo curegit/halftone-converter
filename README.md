@@ -1,11 +1,11 @@
 # Halftone Converter
 
-An image converter to create high quality halftone images
+An image converter for creating high-quality halftone images
 
 ## Key Features
 
-- Easily halftone your images
-- High-quality rendering using Cairo graphics library
+- Easily convert images to halftones
+- High-quality rendering using the Cairo graphics library
 - Halftones of 3 color types – Gray, RGB, and CMYK
 - Color space transformation using ICC profiles
 
@@ -19,7 +19,7 @@ pip install halftone-converter
 
 ### Requirements
 
-This application can be run from Python3 on any OS.
+This application can be run with Python 3 on any OS.
 Note that [Pycairo requires Cairo core library](https://pycairo.readthedocs.io/en/latest/getting_started.html).
 
 - Python >= 3.9
@@ -41,7 +41,7 @@ halftonecv INPUT.jpg
 ### Synopsis
 
 The main program can be invoked either through the `halftonecv` command or through the Python main module option `python3 -m halftonecv`.
-It has command line interface as shown below.
+It has a command-line interface as shown below.
 
 ```txt
 usage: halftonecv [-h] [-v] [-q] [-V] [-e] [-g]
@@ -64,14 +64,15 @@ usage: halftonecv [-h] [-v] [-q] [-V] [-e] [-g]
 
 #### FILE
 
-describe input image files (required), can be multiple
+Input image files (required).
+Multiple files are supported.
 
 Pass `-` to specify standard input.
 
 Input images must be in a format that Pillow can read.
 Also, their color mode must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, palette based images), or CMYK.
 
-A `--` is usable to terminate option parsing so remaining arguments are treated as positional arguments.
+`--` can be used to terminate option parsing so remaining arguments are treated as positional arguments.
 
 ### Optional Arguments
 
@@ -101,13 +102,13 @@ By default, it skips failed jobs (corrupted images, etc.) and starts the next on
 
 interpret `FILE` values as glob patterns (e.g., `*.png`, `**/*.jpg`)
 
-Use this option if the shell's wildcard expansion is not available and enough.
+Use this option if the shell's wildcard expansion is not available or sufficient.
 Pattern `**` matches any files and zero or more directories recursively.
 This glob function will NOT include hidden files or directories.
 
 #### -f, --force
 
-overwrite existing files by outputs
+overwrite existing files with the output
 
 By default, an alternate filename will be used if the original filename conflicts.
 
@@ -172,15 +173,15 @@ The default is `linear`.
 
 #### -A DEG, --angle DEG, --gray-angle DEG
 
-arrange dots by `DEG` degrees in Gray channel
+arrange dots by `DEG` degrees in the Gray channel
 
 #### -t DEG DEG DEG, --Angles DEG DEG DEG, --rgb-angles DEG DEG DEG
 
-arrange dots by `DEG` degrees in each RGB channels respectively
+arrange dots by `DEG` degrees in each RGB channel respectively
 
 #### -a DEG DEG DEG DEG, --angles DEG DEG DEG DEG, --cmyk-angles DEG DEG DEG DEG
 
-arrange dots by `DEG` degrees in each CMYK channels respectively
+arrange dots by `DEG` degrees in each CMYK channel respectively
 
 #### -m {auto,gray,rgb,cmyk}, --mode {auto,gray,rgb,cmyk}
 
@@ -273,7 +274,7 @@ apply sRGB gamma correction for RGB-CMYK conversion when the naive transform is 
 
 #### --key RATE, --key-from RATE
 
-black ingredient threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used
+black component threshold within 0.0-1.0 for RGB-CMYK conversion when the naive transform is used
 
 #### -K, --keep-all
 
@@ -321,7 +322,7 @@ don't convert K channels to halftones
 
 ### CMYK (Japan Color 2011 Coated)
 
-Example with user's custom ICC profile
+Example using the user's custom ICC profile.
 
 ![Anime Girl](images/anime-girl.png)
 
@@ -332,7 +333,7 @@ Example with user's custom ICC profile
 ## Acknowledgments
 
 This application contains some default ICC profiles to convert images between different color spaces.
-`sGray.icc`, `sRGB.icc` and `SWOP.icc` are provided by Artifex Software as a part of [GPL Ghostscript](https://www.ghostscript.com/) under the [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.html).
+`sGray.icc`, `sRGB.icc` and `SWOP.icc` are provided by Artifex Software as part of [GPL Ghostscript](https://www.ghostscript.com/) under the [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.html).
 
 ## License
 

@@ -1,6 +1,6 @@
 [project]
 name = "halftone-converter"
-description = "An image converter to create high quality halftone images"
+description = "An image converter for creating high-quality halftone images"
 keywords = ["image processing", "halftone", "cmyk colors", "cairo"]
 requires-python = ">=3.9"
 readme = "README.md"
