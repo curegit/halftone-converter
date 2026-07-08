@@ -236,6 +236,7 @@ def halftone_image(image, pitch, angle, scale, blur=None, resampler="lanczos2", 
 		r = radius(round(color * (2 ** 16 - 1))) * scale
 		context.arc(x * scale, y * scale, r, 0, 2 * pi)
 		context.fill()
+	surface.flush()
 	return Image.frombuffer("RGBA", (width, height), surface.get_data(), "raw", "RGBA", 0, 1).getchannel("G")
 
 # グレースケールの画像を網点化した画像を返す
