@@ -392,7 +392,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 			# 成功を報告する
 			else:
 				dt = time() - stime
-				if not args.quiet:
+				if not args.quiet and (args.stdout or not nofile):
 					if broken_pipe:
 						eprint(f"{i + 1}/{n} sigpipe: {fname} -> {path} ({dt:.1f} sec)")
 					else:
