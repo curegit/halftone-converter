@@ -29,7 +29,7 @@ with importlib.resources.as_file(root / "profiles" / "sGray.icc") as path:
 	with open(path, "rb") as fp:
 		default_gray_profile = ImageCms.getOpenProfile(io.BytesIO(fp.read()))
 
-def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
+def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False, noexit=False):
 	broken_pipe = False
 	exit_code = 0
 	console = Console(stderr=True)
@@ -427,3 +427,8 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 		eprint("KeyboardInterrupt")
 		exit_code = 128 + 2
 		return exit_code
+
+	except SystemExit as e:
+		if noexit:
+			raise RuntimeError("SystemExit") from e
+		raise
