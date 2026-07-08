@@ -35,10 +35,11 @@ def gamma_reverse(u):
 
 # sRGB と CMYK 間の色の近似的な変換関数を返す
 def make_fake_conversions(k_threshold, gamma_correction):
+	k_is_disabled = 1 - k_threshold < float_info.epsilon
 	def rgb_2_cmyk(r, g, b):
 		if gamma_correction:
 			r, g, b = gamma_reverse(r), gamma_reverse(g), gamma_reverse(b)
-		k = max(0, min(1, (min(1 - r, 1 - g, 1 - b) - k_threshold) / (1 - k_threshold)))
+		k = 0.0 if k_is_disabled else max(0, min(1, (min(1 - r, 1 - g, 1 - b) - k_threshold) / (1 - k_threshold)))
 		c = 0.0 if abs(1 - k) <= float_info.epsilon else max(0, min(1, (1 - r - k) / (1 - k)))
 		m = 0.0 if abs(1 - k) <= float_info.epsilon else max(0, min(1, (1 - g - k) / (1 - k)))
 		y = 0.0 if abs(1 - k) <= float_info.epsilon else max(0, min(1, (1 - b - k) / (1 - k)))
