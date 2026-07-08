@@ -20,11 +20,14 @@ from .modules.core import halftone_grayscale_image, halftone_rgb_image, halftone
 from . import __spec__ as spec
 root = importlib.resources.files(spec.parent if spec is not None else __package__)
 with importlib.resources.as_file(root / "profiles" / "SWOP.icc") as path:
-	default_cmyk_profile = ImageCms.getOpenProfile(str(path))
+	with open(path, "rb") as fp:
+		default_cmyk_profile = ImageCms.getOpenProfile(io.BytesIO(fp.read()))
 with importlib.resources.as_file(root / "profiles" / "sRGB.icc") as path:
-	default_rgb_profile = ImageCms.getOpenProfile(str(path))
+	with open(path, "rb") as fp:
+		default_rgb_profile = ImageCms.getOpenProfile(io.BytesIO(fp.read()))
 with importlib.resources.as_file(root / "profiles" / "sGray.icc") as path:
-	default_gray_profile = ImageCms.getOpenProfile(str(path))
+	with open(path, "rb") as fp:
+		default_gray_profile = ImageCms.getOpenProfile(io.BytesIO(fp.read()))
 
 def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 	broken_pipe = False
