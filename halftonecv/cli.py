@@ -192,6 +192,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 		for i, f in enumerate(input_images):
 			stime = time()
 			try:
+				img_ref = None
 				# 画像を開く
 				if isinstance(f, bytes):
 					fname = f"(kwargs[{i}])"
@@ -204,6 +205,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 				else:
 					fname = f
 					img = Image.open(f)
+					img_ref = img
 				if args.orientation:
 					img = exif_transpose(img)
 				alpha = None
@@ -397,6 +399,12 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False):
 						eprint(f"{i + 1}/{n} sigpipe: {fname} -> {path} ({dt:.1f} sec)")
 					else:
 						eprint(f"{i + 1}/{n} done: {fname} -> {path} ({dt:.1f} sec)")
+			finally:
+				if img_ref is not None:
+					try:
+						img_ref.close()
+					except Exception:
+						pass
 		return exit_code
 
 	except ValueError as e:
