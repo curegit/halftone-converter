@@ -120,7 +120,7 @@ def resample_bilinear(image, x, y):
 	return float(np.clip(np.sum(w * p) / 255, 0.0, 1.0))
 
 # Lanczos 窓関数
-@lru_cache(10000 ** 2)
+@lru_cache(1000 ** 2)
 def lanczos(x, n):
 	return float(np.sinc(x) * np.sinc(x / n)) if abs(x) < n else 0.0
 
