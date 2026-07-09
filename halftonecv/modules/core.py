@@ -138,7 +138,7 @@ def make_lanczos_resampler(n=2):
 	return resample_lanczos
 
 # Spline36 窓関数
-@lru_cache(10000 ** 2)
+@lru_cache(1000 ** 2)
 def spline36(x):
 	d = abs(x)
 	if d <= 1.0:
