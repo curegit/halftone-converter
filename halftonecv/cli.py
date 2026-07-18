@@ -266,7 +266,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False, noe
 						else:
 							t = progress.add_task("Gray", total=1.0)
 							fn = lambda p: progress.update(t, completed=p)
-						halftone = halftone_grayscale_image(target, args.pitch, args.gray_angle, args.scale, blur, args.resample, progress_callback=fn)
+						halftone = halftone_grayscale_image(target, args.pitch, args.gray_angle, args.scale, blur, args.resample, args.keep_all, progress_callback=fn)
 					elif target.mode == "RGB":
 						if progress is None:
 							fns = (None, None, None)
