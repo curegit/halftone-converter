@@ -212,8 +212,8 @@ def halftone_dots(image, pitch, angle, blur, resampler="lanczos2", progress_call
 
 # シングルバンドの画像を網点化した画像を返す
 def halftone_image(image, pitch, angle, scale, blur=None, resampler="lanczos2", keep_flag=False, progress_callback=None):
-	width = round(image.width * scale)
-	height = round(image.height * scale)
+	width = max(1, round(image.width * scale))
+	height = max(1, round(image.height * scale))
 	if keep_flag:
 		res = image.resize((width, height), Resampling.LANCZOS)
 		if progress_callback is not None:
