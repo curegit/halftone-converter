@@ -325,6 +325,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False, noe
 						complete = in_cmyk_rgb(halftone) if same else cmyk_rgb(halftone)
 				# アルファチャンネルを再合成する
 				if alpha is not None and not args.opaque:
+					maybe_icc = complete.info.get("icc_profile")
 					if complete.mode in ["RGB", "L"]:
 						width, height = complete.size
 						if (width, height) != alpha.size:
@@ -335,6 +336,8 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False, noe
 							transparent = (255, 255, 255, 0)
 							bg = Image.new("RGBA", complete.size, transparent)
 							complete = Image.alpha_composite(bg, complete)
+						if maybe_icc is not None:
+							complete.info.update(icc_profile=maybe_icc)
 				# 必要なら ICC プロファイルを廃棄する
 				if args.discard:
 					if complete.info.get("icc_profile"):
