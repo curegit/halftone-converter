@@ -218,7 +218,7 @@ def main(*, argv=None, inputs=None, refout=None, nofile=False, notrap=False, noe
 				elif img.mode == "RGBA":
 					alpha = img.split()[3]
 					img = img.convert("RGB")
-				elif img.mode == "P":
+				elif img.mode == "P" or img.mode == "PA":
 					rgba = img.convert("RGBA")
 					alpha = rgba.split()[3]
 					img = rgba.convert("RGB")

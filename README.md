@@ -70,7 +70,7 @@ Multiple files are supported.
 Pass `-` to specify standard input.
 
 Input images must be in a format that Pillow can read.
-Also, their color mode must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, palette based images), or CMYK.
+Also, their color mode must be Gray (L, grayscale), LA (grayscale with alpha), RGB, RGBA, P (GIF, palette based images), PA (P with alpha), or CMYK.
 
 `--` can be used to terminate option parsing so remaining arguments are treated as positional arguments.
 
