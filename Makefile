@@ -16,6 +16,6 @@ publish: build
 	python3 -m twine upload -u __token__ --repository-url "https://upload.pypi.org/legacy/" dist/*
 
 clean:
-	python3 -c 'import shutil; shutil.rmtree("dist", ignore_errors=True)'
-	python3 -c 'import shutil; shutil.rmtree("build", ignore_errors=True)'
-	python3 -c 'import shutil; shutil.rmtree("halftone_converter.egg-info", ignore_errors=True)'
+	python3 -c "import shutil; shutil.rmtree('dist', ignore_errors=True)"
+	python3 -c "import shutil; shutil.rmtree('build', ignore_errors=True)"
+	python3 -c "import shutil; shutil.rmtree('halftone_converter.egg-info', ignore_errors=True)"
