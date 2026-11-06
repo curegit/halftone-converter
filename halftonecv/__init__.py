@@ -1,4 +1,4 @@
-__version__ = "2.6.12"
+__version__ = "2.6.13"
 
 def pyinstaller_hooks_dir():
 	from pathlib import Path
