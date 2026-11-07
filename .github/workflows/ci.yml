@@ -27,6 +27,7 @@ jobs:
           - "3.14t"
           - "3.15"
           - "3.15t"
+          - "pypy3.x"
     steps:
       - name: Checkout
         uses: actions/checkout@v7
