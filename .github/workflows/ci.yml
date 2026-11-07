@@ -43,6 +43,7 @@ jobs:
           make devinstall
       - name: Smoke testing
         run: |
-          python3 --version
+          python3 -c "import sys; print(sys.version)"
+          python3 -m compileall -f halftonecv
           python3 -m halftonecv --help
           python3 -m halftonecv images/colorful-play-balls.png -p 5
