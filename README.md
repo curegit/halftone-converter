@@ -1,5 +1,7 @@
 # Halftone Converter
 
+[![CI](https://github.com/curegit/halftone-converter/actions/workflows/ci.yml/badge.svg)](https://github.com/curegit/halftone-converter/actions/workflows/ci.yml)
+
 An image converter for creating high-quality halftone images
 
 ## Key Features
